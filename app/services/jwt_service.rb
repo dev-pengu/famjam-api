@@ -1,15 +1,22 @@
 class JwtService
-  SECRET_KEY = Rails.application.credentials.secret_key_base
+  ACCESS_TOKEN_TTL = 15.minutes
 
-  def self.encode(payload, exp = 24.hours.from_now)
-    payload[:exp] = exp.to_i
-    JWT.encode(payload, SECRET_KEY)
+  class DecodeError < StandardError; end
+
+  def self.encode_access_token(user_id:)
+    payload = { user_id: user_id, exp: ACCESS_TOKEN_TTL.from_now.to_i, type: 'access' }
+    JWT.encode(payload, secret, 'HS256')
   end
 
   def self.decode(token)
-    decoded = JWT.decode(token, SECRET_KEY)[0]
-    HashWithIndifferentAccess.new(decoded)
-  rescue JWT::DecodeError
-    nil
+    payload = JWT.decode(token, secret, true, algorithm: 'HS256').first
+    payload.with_indifferent_access
+  rescue JWT::DecodeError, JWT::ExpiredSignature => e
+    raise DecodeError, e.message
   end
+
+  def self.secret
+    Rails.application.credentials.dig(:jwt, :secret) || ENV.fetch('JWT_SECRET')
+  end
+  private_class_method :secret
 end
