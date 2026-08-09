@@ -56,3 +56,4 @@ gem "authentication-zero", "~> 4.0", group: :development
 gem "jwt", "~> 3.2"
 gem "pundit", "~> 2.5.2"
 gem "googleauth", "~> 1.0"
+gem "icalendar", "~> 2.10"

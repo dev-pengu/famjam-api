@@ -4,6 +4,8 @@ class Person < ApplicationRecord
   has_many :families, through: :memberships
   has_many :guardianships, foreign_key: :dependent_person_id, inverse_of: :dependent_person, dependent: :destroy
   has_many :guardians, through: :guardianships, source: :guardian_user
+  has_many :event_participants, dependent: :destroy
+  has_many :events, through: :event_participants
 
   validates :first_name, :last_name, presence: true
 

@@ -1,0 +1,47 @@
+lazaro_nixon_smith:
+  family: smith_family
+  person: lazaro_nixon
+  role: owner
+  status: active
+  color: red
+  joined_at: <%= 1.year.ago.iso8601 %>
+
+jane_admin_smith:
+  family: smith_family
+  person: jane_admin
+  role: admin
+  status: active
+  color: blue
+  joined_at: <%= 1.year.ago.iso8601 %>
+
+alex_adult_smith:
+  family: smith_family
+  person: alex_adult
+  role: adult
+  status: active
+  color: green
+  joined_at: <%= 1.year.ago.iso8601 %>
+
+morgan_adult_smith:
+  family: smith_family
+  person: morgan_adult
+  role: adult
+  status: active
+  color: violet
+  joined_at: <%= 1.year.ago.iso8601 %>
+
+sam_child_smith:
+  family: smith_family
+  person: sam_child
+  role: child
+  status: active
+  color: yellow
+  joined_at: <%= 1.year.ago.iso8601 %>
+
+pat_owner2_jones:
+  family: jones_family
+  person: pat_owner2
+  role: owner
+  status: active
+  color: teal
+  joined_at: <%= 1.year.ago.iso8601 %>

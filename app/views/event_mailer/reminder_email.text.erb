@@ -1,0 +1,8 @@
+Hi <%= @user.person.display_name %>,
+
+This is a reminder for an upcoming event:
+
+<%= @title %>
+<%= @starts_at.in_time_zone(@display_timezone).strftime('%A, %B %-d at %-I:%M %p %Z') %> - <%= @ends_at.in_time_zone(@display_timezone).strftime('%-I:%M %p %Z') %>
+<%= "#{@location}\n" if @location.present? %>
+View event: <%= @event_url %>

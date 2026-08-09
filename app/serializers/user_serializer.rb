@@ -8,6 +8,8 @@ class UserSerializer < ApplicationSerializer
       email_verified: user.verified?,
       locked: user.locked?,
       active_family_id: user.active_family_id,
+      timezone: user.timezone,
+      resolved_timezone: user.display_timezone,
       last_login_at: user.last_login_at,
       created_at: user.created_at,
       person: PersonSerializer.new(user.person).as_json,

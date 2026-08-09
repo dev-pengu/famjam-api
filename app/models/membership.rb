@@ -5,6 +5,8 @@ class Membership < ApplicationRecord
 
   enum :role, { owner: 0, admin: 1, adult: 2, child: 3 }
   enum :status, { active: 0, left: 1, removed: 2 }
+  enum :color, { red: 0, orange: 1, amber: 2, yellow: 3, lime: 4, green: 5,
+                 teal: 6, cyan: 7, blue: 8, indigo: 9, violet: 10, pink: 11 }
 
   validates :person_id, uniqueness: { scope: :family_id }
   validate :single_active_owner_per_family, if: -> { owner? && active? }

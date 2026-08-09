@@ -59,8 +59,20 @@ class ApplicationPolicy
     # within the family the policy is scoped to.
     def guardian_of?(person)
       return false unless membership
-  
+
       context.user.guardianships.exists?(family_id: membership.family_id, dependent_person_id: person.id)
+    end
+
+    # Same as guardian_of?, but true if the current user is a registered
+    # guardian of ANY of the given people (e.g. any managed participant on a
+    # multi-person event), within the family the policy is scoped to.
+    def guardian_of_any?(people)
+      return false unless membership
+
+      person_ids = Array(people).map(&:id)
+      return false if person_ids.empty?
+
+      context.user.guardianships.exists?(family_id: membership.family_id, dependent_person_id: person_ids)
     end
 
   class Scope

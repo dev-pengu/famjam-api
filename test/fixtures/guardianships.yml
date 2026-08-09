@@ -1,0 +1,5 @@
+alex_guardian_of_sam:
+  family: smith_family
+  guardian_user: alex_adult
+  dependent_person: sam_child
+  created_by_user: lazaro_nixon

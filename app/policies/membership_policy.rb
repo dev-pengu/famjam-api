@@ -37,6 +37,12 @@ class MembershipPolicy < ApplicationPolicy
     owner_or_admin? && record.role == 'child'
   end
 
+  # Calendar color is cosmetic, not power-related, so any active member's
+  # color (including an Owner's or Admin's own) can be set by an Owner/Admin.
+  def set_color?
+    owner_or_admin?
+  end
+
   def reactivate?
     return false if record.active?
     return false if record.role == 'owner'

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_28_034037) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_05_050000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -30,6 +30,25 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_28_034037) do
     t.check_constraint "status >= 0 AND status <= 3", name: "account_requests_status_check"
   end
 
+  create_table "agenda_subscriptions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.date "anchor_date", null: false
+    t.datetime "created_at", null: false
+    t.boolean "enabled", default: true, null: false
+    t.uuid "family_id", null: false
+    t.integer "interval_days", default: 7, null: false
+    t.datetime "last_sent_at"
+    t.integer "scope", default: 0, null: false
+    t.integer "send_hour_local", default: 7, null: false
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.index ["enabled", "interval_days"], name: "index_agenda_subscriptions_on_enabled_and_interval_days"
+    t.index ["family_id"], name: "index_agenda_subscriptions_on_family_id"
+    t.index ["user_id"], name: "index_agenda_subscriptions_on_user_id"
+    t.check_constraint "interval_days > 0", name: "agenda_subscriptions_interval_days_check"
+    t.check_constraint "scope >= 0 AND scope <= 1", name: "agenda_subscriptions_scope_check"
+    t.check_constraint "send_hour_local >= 0 AND send_hour_local <= 23", name: "agenda_subscriptions_send_hour_check"
+  end
+
   create_table "audit_logs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "action", null: false
     t.uuid "actor_user_id"
@@ -45,8 +64,86 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_28_034037) do
     t.index ["target_type", "target_id"], name: "index_audit_logs_on_target_type_and_target_id"
   end
 
+  create_table "event_occurrence_exceptions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.integer "category"
+    t.datetime "created_at", null: false
+    t.uuid "created_by_user_id", null: false
+    t.text "description"
+    t.datetime "ends_at"
+    t.uuid "event_id", null: false
+    t.string "location"
+    t.datetime "occurrence_start_at", null: false
+    t.datetime "starts_at"
+    t.integer "status", default: 0, null: false
+    t.string "title"
+    t.datetime "updated_at", null: false
+    t.index ["created_by_user_id"], name: "index_event_occurrence_exceptions_on_created_by_user_id"
+    t.index ["event_id", "occurrence_start_at"], name: "index_occurrence_exceptions_uniqueness", unique: true
+    t.index ["event_id"], name: "index_event_occurrence_exceptions_on_event_id"
+    t.check_constraint "category IS NULL OR category >= 0 AND category <= 3", name: "event_occurrence_exceptions_category_check"
+    t.check_constraint "status >= 0 AND status <= 1", name: "event_occurrence_exceptions_status_check"
+  end
+
+  create_table "event_participants", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.uuid "event_id", null: false
+    t.uuid "person_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["event_id", "person_id"], name: "index_event_participants_on_event_id_and_person_id", unique: true
+    t.index ["event_id"], name: "index_event_participants_on_event_id"
+    t.index ["person_id"], name: "index_event_participants_on_person_id"
+  end
+
+  create_table "event_reminder_deliveries", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "event_reminder_id", null: false
+    t.datetime "occurrence_start_at", null: false
+    t.datetime "sent_at", null: false
+    t.uuid "user_id", null: false
+    t.index ["event_reminder_id", "occurrence_start_at", "user_id"], name: "index_reminder_deliveries_uniqueness", unique: true
+    t.index ["event_reminder_id"], name: "index_event_reminder_deliveries_on_event_reminder_id"
+    t.index ["user_id"], name: "index_event_reminder_deliveries_on_user_id"
+  end
+
+  create_table "event_reminders", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.uuid "event_id", null: false
+    t.integer "minutes_before", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "user_id"
+    t.index ["event_id", "user_id"], name: "index_event_reminders_on_event_id_and_user_id"
+    t.index ["event_id"], name: "index_event_reminders_on_event_id"
+    t.index ["user_id"], name: "index_event_reminders_on_user_id"
+    t.check_constraint "minutes_before > 0", name: "event_reminders_minutes_before_check"
+  end
+
+  create_table "events", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.boolean "all_day", default: false, null: false
+    t.integer "category"
+    t.datetime "created_at", null: false
+    t.uuid "created_by_user_id", null: false
+    t.text "description"
+    t.datetime "ends_at", null: false
+    t.uuid "family_id", null: false
+    t.string "location"
+    t.string "recurrence_byday", default: [], array: true
+    t.integer "recurrence_frequency"
+    t.integer "recurrence_interval", default: 1
+    t.date "recurrence_until"
+    t.datetime "starts_at", null: false
+    t.string "timezone", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_by_user_id"], name: "index_events_on_created_by_user_id"
+    t.index ["family_id", "starts_at"], name: "index_events_on_family_id_and_starts_at"
+    t.index ["family_id"], name: "index_events_on_family_id"
+    t.check_constraint "category IS NULL OR category >= 0 AND category <= 3", name: "events_category_check"
+    t.check_constraint "ends_at >= starts_at", name: "events_ends_after_starts_check"
+    t.check_constraint "recurrence_frequency IS NULL OR recurrence_frequency >= 0 AND recurrence_frequency <= 3", name: "events_recurrence_frequency_check"
+  end
+
   create_table "families", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.string "default_timezone"
     t.integer "invitation_ttl_hours"
     t.string "name", null: false
     t.datetime "updated_at", null: false
@@ -64,6 +161,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_28_034037) do
     t.index ["family_id", "guardian_user_id", "dependent_person_id"], name: "index_guardianships_uniqueness", unique: true
     t.index ["family_id"], name: "index_guardianships_on_family_id"
     t.index ["guardian_user_id"], name: "index_guardianships_on_guardian_user_id"
+  end
+
+  create_table "ical_feed_tokens", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "token", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.index ["token"], name: "index_ical_feed_tokens_on_token", unique: true
+    t.index ["user_id"], name: "index_ical_feed_tokens_on_user_id", unique: true
   end
 
   create_table "identities", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -96,6 +202,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_28_034037) do
   end
 
   create_table "memberships", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.integer "color", default: 0, null: false
     t.datetime "created_at", null: false
     t.uuid "family_id", null: false
     t.uuid "invited_by_user_id"
@@ -111,8 +218,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_28_034037) do
     t.index ["family_id"], name: "index_memberships_on_single_active_owner_per_family", unique: true, where: "((role = 0) AND (status = 0))"
     t.index ["invited_by_user_id"], name: "index_memberships_on_invited_by_user_id"
     t.index ["person_id"], name: "index_memberships_on_person_id"
+    t.check_constraint "color >= 0 AND color <= 11", name: "memberships_color_check"
     t.check_constraint "role >= 0 AND role <= 3", name: "memberships_role_check"
     t.check_constraint "status >= 0 AND status <= 2", name: "memberships_status_check"
+  end
+
+  create_table "notification_preferences", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.boolean "enabled", default: true, null: false
+    t.integer "notification_type", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.index ["user_id", "notification_type"], name: "idx_on_user_id_notification_type_2ab4363e9b", unique: true
+    t.index ["user_id"], name: "index_notification_preferences_on_user_id"
+    t.check_constraint "notification_type >= 0 AND notification_type <= 4", name: "notification_preferences_type_check"
   end
 
   create_table "people", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -147,8 +266,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_28_034037) do
     t.integer "failed_login_attempts", default: 0, null: false
     t.datetime "last_login_at"
     t.datetime "locked_at"
-    t.string "password_digest", null: false
+    t.string "password_digest"
     t.uuid "person_id", null: false
+    t.string "timezone"
     t.datetime "updated_at", null: false
     t.index ["active_family_id"], name: "index_users_on_active_family_id"
     t.index ["email"], name: "index_users_on_email", unique: true
@@ -156,12 +276,25 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_28_034037) do
   end
 
   add_foreign_key "account_requests", "users"
+  add_foreign_key "agenda_subscriptions", "families", on_delete: :cascade
+  add_foreign_key "agenda_subscriptions", "users", on_delete: :cascade
   add_foreign_key "audit_logs", "families"
   add_foreign_key "audit_logs", "users", column: "actor_user_id"
+  add_foreign_key "event_occurrence_exceptions", "events", on_delete: :cascade
+  add_foreign_key "event_occurrence_exceptions", "users", column: "created_by_user_id"
+  add_foreign_key "event_participants", "events", on_delete: :cascade
+  add_foreign_key "event_participants", "people"
+  add_foreign_key "event_reminder_deliveries", "event_reminders", on_delete: :cascade
+  add_foreign_key "event_reminder_deliveries", "users"
+  add_foreign_key "event_reminders", "events", on_delete: :cascade
+  add_foreign_key "event_reminders", "users"
+  add_foreign_key "events", "families"
+  add_foreign_key "events", "users", column: "created_by_user_id"
   add_foreign_key "guardianships", "families"
   add_foreign_key "guardianships", "people", column: "dependent_person_id"
   add_foreign_key "guardianships", "users", column: "created_by_user_id"
   add_foreign_key "guardianships", "users", column: "guardian_user_id"
+  add_foreign_key "ical_feed_tokens", "users", on_delete: :cascade
   add_foreign_key "identities", "users"
   add_foreign_key "invitations", "families"
   add_foreign_key "invitations", "people", column: "used_by_person_id"
@@ -169,6 +302,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_28_034037) do
   add_foreign_key "memberships", "families"
   add_foreign_key "memberships", "people"
   add_foreign_key "memberships", "users", column: "invited_by_user_id"
+  add_foreign_key "notification_preferences", "users", on_delete: :cascade
   add_foreign_key "refresh_tokens", "users"
   add_foreign_key "users", "families", column: "active_family_id"
   add_foreign_key "users", "people"

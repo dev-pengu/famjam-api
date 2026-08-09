@@ -1,0 +1,15 @@
+<h2 style="margin-bottom: 8px;"><%= @whole_family ? "#{@family.name}'s upcoming agenda" : 'Your upcoming agenda' %></h2>
+<p>Hi <%= @user.person.display_name %>,</p>
+<% if @occurrences.empty? %>
+  <p>Nothing coming up.</p>
+<% else %>
+  <% @occurrences.each do |occurrence| %>
+    <p style="margin: 16px 0; padding: 12px 16px; background: #f5f5f5; border-radius: 8px;">
+      <strong><%= occurrence.title %></strong><br>
+      <%= occurrence.starts_at.in_time_zone(@display_timezone).strftime('%A, %B %-d at %-I:%M %p %Z') %>
+      <% if occurrence.location.present? %>
+        <br><%= occurrence.location %>
+      <% end %>
+    </p>
+  <% end %>
+<% end %>

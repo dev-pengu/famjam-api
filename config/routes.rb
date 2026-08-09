@@ -28,7 +28,10 @@ Rails.application.routes.draw do
       end
 
       # --- Authenticated account-level (not family-scoped) ---
-      resource :profile, only: %i[show update], controller: 'profile'
+      resource :profile, only: %i[show update], controller: 'profile' do
+        patch :timezone
+      end
+      resources :timezones, only: [:index]
       resources :refresh_tokens, only: %i[index destroy] do
         collection { delete :destroy_all }
       end
@@ -51,6 +54,7 @@ Rails.application.routes.draw do
             post :transfer_ownership
             post :age_up
             post :reactivate
+            patch :set_color
           end
         end
 
@@ -59,7 +63,25 @@ Rails.application.routes.draw do
         end
         resources :guardianships, only: %i[create destroy]
         resources :invitations, only: %i[index create destroy]
+
+        resources :events do
+          collection { post :check_overlap }
+          member do
+            patch :occurrence
+            delete :occurrence
+          end
+          resources :participants, only: %i[create destroy], controller: 'event_participants'
+          resources :reminders, only: %i[index create destroy], controller: 'event_reminders'
+        end
+        resources :agenda_subscriptions, only: %i[index create update destroy]
       end
+
+      resource :notification_preferences, only: %i[show update], controller: 'notification_preferences'
+      resource :ical_feed_token, only: %i[show create], controller: 'ical_feed_tokens'
+
+      # Unauthenticated - hit directly by external calendar apps, gated by
+      # the opaque token in the URL itself rather than a bearer header.
+      get 'ical/:token/feed.ics', to: 'ical_feeds#show', as: :ical_feed
     end
   end
 end

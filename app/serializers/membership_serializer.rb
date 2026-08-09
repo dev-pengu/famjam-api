@@ -7,6 +7,7 @@ class MembershipSerializer < ApplicationSerializer
       family_id: membership.family_id,
       role: membership.role,
       status: membership.status,
+      color: membership.color,
       joined_at: membership.joined_at,
       left_at: membership.left_at,
       removed_at: membership.removed_at,

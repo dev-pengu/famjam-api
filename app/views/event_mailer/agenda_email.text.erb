@@ -1,0 +1,11 @@
+Hi <%= @user.person.display_name %>,
+
+<%= @whole_family ? "#{@family.name}'s upcoming agenda:" : 'Your upcoming agenda:' %>
+<% if @occurrences.empty? %>
+
+Nothing coming up.
+<% else %>
+<% @occurrences.each do |occurrence| %>
+- <%= occurrence.title %> - <%= occurrence.starts_at.in_time_zone(@display_timezone).strftime('%A, %B %-d at %-I:%M %p %Z') %><%= " (#{occurrence.location})" if occurrence.location.present? %>
+<% end %>
+<% end %>

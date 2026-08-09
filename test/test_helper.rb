@@ -3,8 +3,11 @@ require_relative "../config/environment"
 require "rails/test_help"
 
 class ActiveSupport::TestCase
-  # Run tests in parallel with specified workers
-  parallelize(workers: :number_of_processors)
+  # Process-based parallelization forks worker processes after Rails has
+  # already opened a DB connection, which isn't fork-safe with libpq and
+  # segfaults in some sandboxed/CI environments. The suite runs in ~2s even
+  # serially at this size, so it's not worth chasing a fork-safe setup.
+  parallelize(workers: 1)
 
   # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
   fixtures :all

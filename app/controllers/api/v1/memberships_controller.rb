@@ -61,6 +61,17 @@ module Api
         render json: MembershipSerializer.new(@family.memberships.inactive.includes(ROSTER_INCLUDES))
       end
 
+      def set_color
+        membership = @family.memberships.find(params[:id])
+        authorize membership, :set_color?
+
+        contract = MembershipSetColorParams.build(params)
+        return render_invalid(contract) unless contract.valid?
+
+        result = SetMembershipColorService.call(actor: current_user, membership: membership, color: contract.color)
+        render_result(result, serializer: MembershipSerializer)
+      end
+
       def reactivate
         membership = @family.memberships.find(params[:id])
         authorize membership, :reactivate?

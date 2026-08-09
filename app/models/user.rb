@@ -12,6 +12,11 @@ class User < ApplicationRecord
   has_many :guardianships, foreign_key: :guardian_user_id, inverse_of: :guardian_user, dependent: :destroy
   has_many :dependents, through: :guardianships, source: :dependent_person
   has_many :created_invitations, class_name: 'Invitation', foreign_key: :created_by_user_id
+  has_many :created_events, class_name: 'Event', foreign_key: :created_by_user_id
+  has_many :event_reminders, dependent: :destroy
+  has_many :notification_preferences, dependent: :destroy
+  has_many :agenda_subscriptions, dependent: :destroy
+  has_one :ical_feed_token, dependent: :destroy
 
   DEFAULT_LOCKOUT_MAX_ATTEMPTS = 3
   DEFAULT_LOCKOUT_DURATION = 15.minutes
@@ -53,5 +58,15 @@ class User < ApplicationRecord
 
   def has_login_credential?
     password_digest.present? || identities.exists?
+  end
+
+  def display_timezone(family: nil)
+    timezone.presence || family&.timezone || Family::DEFAULT_TIMEZONE
+  end
+
+  # Opt-out model: a missing preference row means notifications of that type
+  # are enabled.
+  def notifies_for?(notification_type)
+    notification_preferences.find_by(notification_type: notification_type)&.enabled != false
   end
 end

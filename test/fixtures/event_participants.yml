@@ -1,0 +1,19 @@
+family_dinner_lazaro:
+  event: family_dinner
+  person: lazaro_nixon
+
+family_dinner_jane:
+  event: family_dinner
+  person: jane_admin
+
+family_dinner_alex:
+  event: family_dinner
+  person: alex_adult
+
+family_dinner_sam:
+  event: family_dinner
+  person: sam_child
+
+sams_dentist_sam:
+  event: sams_dentist
+  person: sam_child
