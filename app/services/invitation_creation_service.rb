@@ -16,7 +16,7 @@ class InvitationCreationService < ApplicationService
     )
 
     AuditLogger.log(
-      action: 'invitation.created',
+      action: "invitation.created",
       actor_user: @actor,
       family: @family,
       target: invitation,

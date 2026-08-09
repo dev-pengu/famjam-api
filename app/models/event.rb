@@ -1,6 +1,6 @@
 class Event < ApplicationRecord
   belongs_to :family
-  belongs_to :created_by_user, class_name: 'User'
+  belongs_to :created_by_user, class_name: "User"
 
   has_many :event_participants, dependent: :destroy
   has_many :people, through: :event_participants
@@ -24,12 +24,12 @@ class Event < ApplicationRecord
   def ends_after_starts
     return if starts_at.blank? || ends_at.blank?
 
-    errors.add(:ends_at, 'must be on or after starts_at') if ends_at < starts_at
+    errors.add(:ends_at, "must be on or after starts_at") if ends_at < starts_at
   end
 
   def recurrence_byday_only_valid_when_weekly
     return if recurrence_byday.blank?
 
-    errors.add(:recurrence_byday, 'is only valid for weekly recurrence') unless recurs_weekly?
+    errors.add(:recurrence_byday, "is only valid for weekly recurrence") unless recurs_weekly?
   end
 end

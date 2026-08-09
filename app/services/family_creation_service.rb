@@ -16,7 +16,7 @@ class FamilyCreationService < ApplicationService
     end
 
     @user.update!(active_family: family)
-    AuditLogger.log(action: 'family.created', actor_user: @user, family: family, target: membership)
+    AuditLogger.log(action: "family.created", actor_user: @user, family: family, target: membership)
 
     ServiceResult.success(family)
   rescue ActiveRecord::RecordInvalid => e

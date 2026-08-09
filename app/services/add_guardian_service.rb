@@ -12,7 +12,7 @@ class AddGuardianService < ApplicationService
     )
 
     AuditLogger.log(
-      action: 'guardianship.added',
+      action: "guardianship.added",
       actor_user: @actor,
       family: @family,
       target: guardianship,

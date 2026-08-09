@@ -8,7 +8,7 @@ class EventTest < ActiveSupport::TestCase
       title: "Soccer Practice",
       timezone: "America/Chicago",
       starts_at: 1.day.from_now,
-      ends_at: 1.day.from_now + 1.hour,
+      ends_at: 1.day.from_now + 1.hour
     }
   end
 
@@ -47,13 +47,13 @@ class EventTest < ActiveSupport::TestCase
   end
 
   test "recurrence_byday is only valid for weekly recurrence" do
-    event = Event.new(valid_attributes.merge(recurrence_frequency: :daily, recurrence_byday: ["TU"]))
+    event = Event.new(valid_attributes.merge(recurrence_frequency: :daily, recurrence_byday: [ "TU" ]))
     assert_not event.valid?
     assert_includes event.errors[:recurrence_byday], "is only valid for weekly recurrence"
   end
 
   test "recurrence_byday is valid for weekly recurrence" do
-    event = Event.new(valid_attributes.merge(recurrence_frequency: :weekly, recurrence_byday: ["TU"]))
+    event = Event.new(valid_attributes.merge(recurrence_frequency: :weekly, recurrence_byday: [ "TU" ]))
     assert event.valid?
   end
 

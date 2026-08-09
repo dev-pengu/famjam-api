@@ -7,7 +7,7 @@ class MembershipPolicy < ApplicationPolicy
   # Admin can remove Adults and Children, but not the Owner or other Admins.
   def remove?
     return false unless owner_or_admin?
-    return false if record.role == 'owner'
+    return false if record.role == "owner"
     return true if owner?
 
     admin? && record.role.in?(%w[adult child])
@@ -16,15 +16,15 @@ class MembershipPolicy < ApplicationPolicy
   # Self-service leave. Owner cannot leave directly — must transfer ownership
   # first, at which point their own membership row is no longer role: owner.
   def leave?
-    record.person_id == context.user.person_id && record.role != 'owner'
+    record.person_id == context.user.person_id && record.role != "owner"
   end
 
   def grant_admin?
-    owner? && record.role == 'adult'
+    owner? && record.role == "adult"
   end
 
   def revoke_admin?
-    owner? && record.role == 'admin'
+    owner? && record.role == "admin"
   end
 
   # Ownership transfer: target must currently be admin or adult, and can't be
@@ -34,7 +34,7 @@ class MembershipPolicy < ApplicationPolicy
   end
 
   def age_up?
-    owner_or_admin? && record.role == 'child'
+    owner_or_admin? && record.role == "child"
   end
 
   # Calendar color is cosmetic, not power-related, so any active member's
@@ -45,12 +45,22 @@ class MembershipPolicy < ApplicationPolicy
 
   def reactivate?
     return false if record.active?
-    return false if record.role == 'owner'
+    return false if record.role == "owner"
 
     owner? || (amdin? && record.role.in?(%w[adult child]))
   end
 
   def view_former?
     owner_or_admin?
+  end
+
+  # Coins are awarded/redeemed by an Owner/Admin for any member, or by a
+  # registered guardian for their own managed dependent.
+  def award_coins?
+    owner_or_admin? || guardian_of?(record.person)
+  end
+
+  def redeem_coins?
+    owner_or_admin? || guardian_of?(record.person)
   end
 end

@@ -8,11 +8,11 @@ class AgeUpService < ApplicationService
     @membership.update!(role: :adult)
 
     AuditLogger.log(
-      action: 'member.aged_up',
+      action: "member.aged_up",
       actor_user: @actor,
       family: @membership.family,
       target: @membership,
-      metadata: { from: 'child', to: 'adult' },
+      metadata: { from: "child", to: "adult" },
     )
 
     ServiceResult.success(@membership)

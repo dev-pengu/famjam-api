@@ -12,7 +12,7 @@ class InvitationSerializer < ApplicationSerializer
       used_at: invitation.used_at,
       redeemable: invitation.redeemable?,
       created_by_user_id: invitation.created_by_user_id,
-      created_at: invitation.created_at,
+      created_at: invitation.created_at
     }
   end
 end

@@ -1,7 +1,7 @@
 class RefreshToken < ApplicationRecord
   belongs_to :user
 
-  scope :active, -> { where(revoked_at: nil).where('expires_at > ?', Time.current) }
+  scope :active, -> { where(revoked_at: nil).where("expires_at > ?", Time.current) }
 
   # Stores only the hash; the raw token is returned once at issuance time and
   # never persisted. Rotate on every refresh — if a rotated-out (already

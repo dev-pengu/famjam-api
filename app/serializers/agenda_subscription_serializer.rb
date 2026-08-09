@@ -10,7 +10,7 @@ class AgendaSubscriptionSerializer < ApplicationSerializer
       send_hour_local: subscription.send_hour_local,
       anchor_date: subscription.anchor_date,
       enabled: subscription.enabled,
-      last_sent_at: subscription.last_sent_at,
+      last_sent_at: subscription.last_sent_at
     }
   end
 end

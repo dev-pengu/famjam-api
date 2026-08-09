@@ -7,7 +7,7 @@ class CreateEventReminderDeliveries < ActiveRecord::Migration[8.1]
       t.datetime :sent_at, null: false
     end
 
-    add_index :event_reminder_deliveries, [:event_reminder_id, :occurrence_start_at, :user_id], unique: true,
+    add_index :event_reminder_deliveries, [ :event_reminder_id, :occurrence_start_at, :user_id ], unique: true,
       name: 'index_reminder_deliveries_uniqueness'
   end
 end

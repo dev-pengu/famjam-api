@@ -7,7 +7,7 @@ class CreateEventReminders < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :event_reminders, [:event_id, :user_id]
+    add_index :event_reminders, [ :event_id, :user_id ]
     add_check_constraint :event_reminders, 'minutes_before > 0', name: 'event_reminders_minutes_before_check'
   end
 end

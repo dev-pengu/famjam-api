@@ -12,7 +12,7 @@ class UserSerializer < ApplicationSerializer
       resolved_timezone: user.display_timezone,
       last_login_at: user.last_login_at,
       created_at: user.created_at,
-      person: PersonSerializer.new(user.person).as_json,
+      person: PersonSerializer.new(user.person).as_json
     }
   end
 end

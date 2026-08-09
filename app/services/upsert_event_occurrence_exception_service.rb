@@ -11,7 +11,7 @@ class UpsertEventOccurrenceExceptionService < ApplicationService
   end
 
   def call
-    return ServiceResult.failure(['occurrence_start_at is not a valid occurrence of this event']) unless valid_occurrence?
+    return ServiceResult.failure([ "occurrence_start_at is not a valid occurrence of this event" ]) unless valid_occurrence?
 
     exception = @event.event_occurrence_exceptions.find_or_initialize_by(occurrence_start_at: @occurrence_start_at)
     exception.created_by_user ||= @actor

@@ -1,5 +1,5 @@
 class EventMailer < ApplicationMailer
-  FRONTEND_BASE_URL = ENV.fetch('FRONTEND_BASE_URL', 'http://localhost:5173')
+  FRONTEND_BASE_URL = ENV.fetch("FRONTEND_BASE_URL", "http://localhost:5173")
 
   def reminder_email(user:, event:, occurrence_start_at:, starts_at:, ends_at:, title:, location:)
     @user = user
@@ -27,6 +27,6 @@ class EventMailer < ApplicationMailer
     @occurrences = occurrences.reject(&:cancelled?).sort_by(&:starts_at)
     @whole_family = subscription.whole_family?
 
-    mail(to: @user.email, subject: @whole_family ? "#{@family.name}'s upcoming agenda" : 'Your upcoming agenda')
+    mail(to: @user.email, subject: @whole_family ? "#{@family.name}'s upcoming agenda" : "Your upcoming agenda")
   end
 end

@@ -7,12 +7,12 @@ class InvitationRedemptionService < ApplicationService
 
   def call
     invitation = Invitation.find_by(code: @code)
-    return ServiceResult.failure(['invitation code not found']) unless invitation
-    return ServiceResult.failure(['invitation has expired']) if invitation.expired?
-    return ServiceResult.failure(['invitation has already been used or revoked']) unless invitation.redeemable?
+    return ServiceResult.failure([ "invitation code not found" ]) unless invitation
+    return ServiceResult.failure([ "invitation has expired" ]) if invitation.expired?
+    return ServiceResult.failure([ "invitation has already been used or revoked" ]) unless invitation.redeemable?
 
     if invitation.email.present? && invitation.email.casecmp(@redeemer_email.to_s).nonzero?
-      return ServiceResult.failure(['this invitation is restricted to a different email address'])
+      return ServiceResult.failure([ "this invitation is restricted to a different email address" ])
     end
 
     membership = nil
@@ -22,7 +22,7 @@ class InvitationRedemptionService < ApplicationService
     end
 
     AuditLogger.log(
-      action: 'invitation.redeemed',
+      action: "invitation.redeemed",
       actor_user: @person.user,
       family: invitation.family,
       target: membership,
@@ -31,6 +31,6 @@ class InvitationRedemptionService < ApplicationService
 
     ServiceResult.success(membership)
   rescue RuntimeError => e
-    ServiceResult.failure([e.message])
+    ServiceResult.failure([ e.message ])
   end
 end

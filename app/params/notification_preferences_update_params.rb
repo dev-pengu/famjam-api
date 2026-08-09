@@ -14,7 +14,7 @@ class NotificationPreferencesUpdateParams < ApplicationParams
     return errors.add(:preferences, "can't be blank") if entries.empty?
 
     entries.each do |entry|
-      type = entry.is_a?(Hash) ? (entry['notification_type'] || entry[:notification_type]) : nil
+      type = entry.is_a?(Hash) ? (entry["notification_type"] || entry[:notification_type]) : nil
       errors.add(:preferences, "notification_type #{type.inspect} is not recognized") unless NotificationPreference.notification_types.key?(type.to_s)
     end
   end

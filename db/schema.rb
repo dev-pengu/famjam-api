@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_05_050000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_09_020000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -62,6 +62,23 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_05_050000) do
     t.index ["actor_user_id"], name: "index_audit_logs_on_actor_user_id"
     t.index ["family_id"], name: "index_audit_logs_on_family_id"
     t.index ["target_type", "target_id"], name: "index_audit_logs_on_target_type_and_target_id"
+  end
+
+  create_table "coin_transactions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.integer "amount", null: false
+    t.integer "balance_after", null: false
+    t.datetime "created_at", null: false
+    t.uuid "created_by_user_id", null: false
+    t.integer "kind", null: false
+    t.uuid "membership_id", null: false
+    t.string "note"
+    t.datetime "updated_at", null: false
+    t.index ["created_by_user_id"], name: "index_coin_transactions_on_created_by_user_id"
+    t.index ["membership_id", "created_at"], name: "index_coin_transactions_on_membership_id_and_created_at"
+    t.index ["membership_id"], name: "index_coin_transactions_on_membership_id"
+    t.check_constraint "amount <> 0", name: "coin_transactions_amount_not_zero_check"
+    t.check_constraint "balance_after >= 0", name: "coin_transactions_balance_after_check"
+    t.check_constraint "kind >= 0 AND kind <= 1", name: "coin_transactions_kind_check"
   end
 
   create_table "event_occurrence_exceptions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -202,6 +219,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_05_050000) do
   end
 
   create_table "memberships", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.integer "coin_balance", default: 0, null: false
     t.integer "color", default: 0, null: false
     t.datetime "created_at", null: false
     t.uuid "family_id", null: false
@@ -218,6 +236,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_05_050000) do
     t.index ["family_id"], name: "index_memberships_on_single_active_owner_per_family", unique: true, where: "((role = 0) AND (status = 0))"
     t.index ["invited_by_user_id"], name: "index_memberships_on_invited_by_user_id"
     t.index ["person_id"], name: "index_memberships_on_person_id"
+    t.check_constraint "coin_balance >= 0", name: "memberships_coin_balance_check"
     t.check_constraint "color >= 0 AND color <= 11", name: "memberships_color_check"
     t.check_constraint "role >= 0 AND role <= 3", name: "memberships_role_check"
     t.check_constraint "status >= 0 AND status <= 2", name: "memberships_status_check"
@@ -280,6 +299,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_05_050000) do
   add_foreign_key "agenda_subscriptions", "users", on_delete: :cascade
   add_foreign_key "audit_logs", "families"
   add_foreign_key "audit_logs", "users", column: "actor_user_id"
+  add_foreign_key "coin_transactions", "memberships"
+  add_foreign_key "coin_transactions", "users", column: "created_by_user_id"
   add_foreign_key "event_occurrence_exceptions", "events", on_delete: :cascade
   add_foreign_key "event_occurrence_exceptions", "users", column: "created_by_user_id"
   add_foreign_key "event_participants", "events", on_delete: :cascade

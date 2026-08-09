@@ -37,6 +37,6 @@ class EventUpdateParams < ApplicationParams
   private
 
   def at_least_one_field_present
-    errors.add(:base, 'must include at least one field to update') unless any_changes?
+    errors.add(:base, "must include at least one field to update") unless any_changes?
   end
 end

@@ -9,11 +9,11 @@ class AdminGrantService < ApplicationService
     @membership.update!(role: :admin)
 
     AuditLogger.log(
-      action: 'member.role_changed',
+      action: "member.role_changed",
       actor_user: @actor,
       family: @membership.family,
       target: @membership,
-      metadata: { from: previous_role, to: 'admin' },
+      metadata: { from: previous_role, to: "admin" },
     )
 
     ServiceResult.success(@membership)

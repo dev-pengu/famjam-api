@@ -1,7 +1,8 @@
 class Membership < ApplicationRecord
   belongs_to :family
   belongs_to :person
-  belongs_to :invited_by_user, class_name: 'User', optional: true
+  belongs_to :invited_by_user, class_name: "User", optional: true
+  has_many :coin_transactions, dependent: :destroy
 
   enum :role, { owner: 0, admin: 1, adult: 2, child: 3 }
   enum :status, { active: 0, left: 1, removed: 2 }
@@ -38,6 +39,6 @@ class Membership < ApplicationRecord
       return unless family
 
       existing = family.memberships.active.where(role: :owner).where.not(id: id)
-      errors.add(:role, 'family already has an active owner') if existing.exists?
+      errors.add(:role, "family already has an active owner") if existing.exists?
     end
 end

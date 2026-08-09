@@ -8,7 +8,7 @@ class IcalFeedToken < ApplicationRecord
   end
 
   def webcal_url
-    host = ENV.fetch('API_BASE_URL', 'http://localhost:3000').sub(%r{\Ahttps?://}, '')
+    host = ENV.fetch("API_BASE_URL", "http://localhost:3000").sub(%r{\Ahttps?://}, "")
     "webcal://#{host}/api/v1/ical/#{token}/feed.ics"
   end
 

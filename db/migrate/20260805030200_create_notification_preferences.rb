@@ -7,7 +7,7 @@ class CreateNotificationPreferences < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :notification_preferences, [:user_id, :notification_type], unique: true
+    add_index :notification_preferences, [ :user_id, :notification_type ], unique: true
     add_check_constraint :notification_preferences, 'notification_type BETWEEN 0 AND 4',
       name: 'notification_preferences_type_check'
   end

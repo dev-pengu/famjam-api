@@ -36,9 +36,9 @@ class OccurrenceMaterializer
   def non_recurring_occurrence(event)
     return [] unless overlaps_range?(event.starts_at, event.ends_at)
 
-    [build_occurrence(event, occurrence_start_at: event.starts_at, starts_at: event.starts_at, ends_at: event.ends_at,
+    [ build_occurrence(event, occurrence_start_at: event.starts_at, starts_at: event.starts_at, ends_at: event.ends_at,
                        title: event.title, description: event.description, location: event.location,
-                       category: event.category)]
+                       category: event.category) ]
   end
 
   def recurring_occurrences(event)

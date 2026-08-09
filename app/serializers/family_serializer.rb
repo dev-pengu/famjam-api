@@ -11,7 +11,7 @@ class FamilySerializer < ApplicationSerializer
       resolved_timezone: family.timezone,
       created_at: family.created_at,
       owner: family.owner_membership.person,
-      memberships: MembershipSerializer.new(family.memberships),
+      memberships: MembershipSerializer.new(family.memberships)
     }
   end
 end

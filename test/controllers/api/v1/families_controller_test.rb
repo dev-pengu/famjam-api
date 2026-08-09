@@ -16,7 +16,7 @@ class Api::V1::FamiliesControllerTest < ActionDispatch::IntegrationTest
     family = families(:smith_family)
 
     patch api_v1_family_url(family), headers: auth_headers(users(:lazaro_nixon), family), params: {
-      default_timezone: "America/Chicago",
+      default_timezone: "America/Chicago"
     }
 
     assert_response :success
@@ -29,7 +29,7 @@ class Api::V1::FamiliesControllerTest < ActionDispatch::IntegrationTest
     family = families(:smith_family)
 
     patch api_v1_family_url(family), headers: auth_headers(users(:lazaro_nixon), family), params: {
-      default_timezone: "Not/A_Zone",
+      default_timezone: "Not/A_Zone"
     }
 
     assert_response :unprocessable_entity

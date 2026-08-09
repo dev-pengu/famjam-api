@@ -12,7 +12,7 @@ class CreateMemberships < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :memberships, [:family_id, :person_id], unique: true
+    add_index :memberships, [ :family_id, :person_id ], unique: true
 
     # DB-enforced invariant: at most one ACTIVE owner per family, regardless of app-layer bugs.
     add_index :memberships, :family_id,

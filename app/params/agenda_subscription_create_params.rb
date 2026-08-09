@@ -1,5 +1,5 @@
 class AgendaSubscriptionCreateParams < ApplicationParams
-  attribute :scope, :string, default: 'mine'
+  attribute :scope, :string, default: "mine"
   attribute :interval_days, :integer, default: 7
   attribute :send_hour_local, :integer, default: 7
 

@@ -21,7 +21,7 @@ class IssueTokenPairService < ApplicationService
 
     {
       access_token: JwtService.encode_access_token(user_id: @user.id),
-      refresh_token: raw_refresh_token,
+      refresh_token: raw_refresh_token
     }
   end
 end

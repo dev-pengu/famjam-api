@@ -17,7 +17,7 @@ class CreateEventOccurrenceExceptions < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :event_occurrence_exceptions, [:event_id, :occurrence_start_at], unique: true,
+    add_index :event_occurrence_exceptions, [ :event_id, :occurrence_start_at ], unique: true,
       name: 'index_occurrence_exceptions_uniqueness'
     add_check_constraint :event_occurrence_exceptions, 'status BETWEEN 0 AND 1',
       name: 'event_occurrence_exceptions_status_check'

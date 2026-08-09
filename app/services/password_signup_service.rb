@@ -16,7 +16,7 @@ class PasswordSignupService < ApplicationService
     end
 
     UserMailer.verification_email(user).deliver_later
-    AuditLogger.log(action: 'user.signed_up', actor_user: user, metadata: { method: 'password' })
+    AuditLogger.log(action: "user.signed_up", actor_user: user, metadata: { method: "password" })
 
     ServiceResult.success(user)
   rescue ActiveRecord::RecordInvalid => e

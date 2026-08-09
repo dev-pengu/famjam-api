@@ -13,11 +13,11 @@ class RefreshTokenService < ApplicationService
   def call
     token_hash = RefreshToken.hash_token(@raw_refresh_token)
     refresh_token = RefreshToken.find_by(token_hash: token_hash)
-    return ServiceResult.failure(['invalid refresh token']) unless refresh_token
+    return ServiceResult.failure([ "invalid refresh token" ]) unless refresh_token
 
     if refresh_token.revoked? || refresh_token.expired?
       handle_suspected_reuse(refresh_token) if refresh_token.revoked?
-      return ServiceResult.failure(['refresh token is no longer valid'])
+      return ServiceResult.failure([ "refresh token is no longer valid" ])
     end
 
     user = refresh_token.user
@@ -36,7 +36,7 @@ class RefreshTokenService < ApplicationService
     user = refresh_token.user
     user.refresh_tokens.active.find_each(&:revoke!)
     AuditLogger.log(
-      action: 'security.refresh_token_reuse_detected',
+      action: "security.refresh_token_reuse_detected",
       actor_user: user,
       metadata: { ip_address: @ip_address },
     )

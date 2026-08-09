@@ -6,7 +6,7 @@ class MemberLeaveService < ApplicationService
   def call
     @membership.leave!
     AuditLogger.log(
-      action: 'member.left',
+      action: "member.left",
       actor_user: @membership.person.user,
       family: @membership.family,
       target: @membership,

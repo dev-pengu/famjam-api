@@ -5,7 +5,7 @@ class NotificationPreferenceSerializer < ApplicationSerializer
     {
       id: preference.id,
       notification_type: preference.notification_type,
-      enabled: preference.enabled,
+      enabled: preference.enabled
     }
   end
 end

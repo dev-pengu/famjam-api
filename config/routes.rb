@@ -12,32 +12,32 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   # root "posts#index"
-   
+
   # api endpoints
   namespace :api do
     namespace :v1 do
       # --- Auth entry points (all public / unauthenticated) ---
-      resource :registration, only: [:create]
-      resource :session, only: [:create]
-      resource :token_refresh, only: [:create]
-      resource :account_link, only: [:create]
-      post 'oauth/google', to: 'oauth_sessions#create'
+      resource :registration, only: [ :create ]
+      resource :session, only: [ :create ]
+      resource :token_refresh, only: [ :create ]
+      resource :account_link, only: [ :create ]
+      post "oauth/google", to: "oauth_sessions#create"
       resource :password_reset, only: %i[create update]
-      resource :email_verification, only: [:create] do
+      resource :email_verification, only: [ :create ] do
         post :resend, on: :collection
       end
 
       # --- Authenticated account-level (not family-scoped) ---
-      resource :profile, only: %i[show update], controller: 'profile' do
+      resource :profile, only: %i[show update], controller: "profile" do
         patch :timezone
       end
-      resources :timezones, only: [:index]
+      resources :timezones, only: [ :index ]
       resources :refresh_tokens, only: %i[index destroy] do
         collection { delete :destroy_all }
       end
-      resource :invitation_redemption, only: [:create]
+      resource :invitation_redemption, only: [ :create ]
       resources :account_requests, only: %i[index create]
-      resource :password_change, only: [:update]
+      resource :password_change, only: [ :update ]
 
       # --- Families and everything scoped inside one ---
       resources :families, only: %i[index show create update] do
@@ -55,7 +55,11 @@ Rails.application.routes.draw do
             post :age_up
             post :reactivate
             patch :set_color
+            post :award_coins
+            post :redeem_coins
           end
+
+          resources :coin_transactions, only: [ :index ]
         end
 
         resources :dependents, only: %i[create destroy] do
@@ -70,18 +74,18 @@ Rails.application.routes.draw do
             patch :occurrence
             delete :occurrence
           end
-          resources :participants, only: %i[create destroy], controller: 'event_participants'
-          resources :reminders, only: %i[index create destroy], controller: 'event_reminders'
+          resources :participants, only: %i[create destroy], controller: "event_participants"
+          resources :reminders, only: %i[index create destroy], controller: "event_reminders"
         end
         resources :agenda_subscriptions, only: %i[index create update destroy]
       end
 
-      resource :notification_preferences, only: %i[show update], controller: 'notification_preferences'
-      resource :ical_feed_token, only: %i[show create], controller: 'ical_feed_tokens'
+      resource :notification_preferences, only: %i[show update], controller: "notification_preferences"
+      resource :ical_feed_token, only: %i[show create], controller: "ical_feed_tokens"
 
       # Unauthenticated - hit directly by external calendar apps, gated by
       # the opaque token in the URL itself rather than a bearer header.
-      get 'ical/:token/feed.ics', to: 'ical_feeds#show', as: :ical_feed
+      get "ical/:token/feed.ics", to: "ical_feeds#show", as: :ical_feed
     end
   end
 end

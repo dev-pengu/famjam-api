@@ -9,7 +9,7 @@ class RevokeSessionService < ApplicationService
   def call
     @refresh_token.revoke!
     AuditLogger.log(
-      action: 'session.revoked',
+      action: "session.revoked",
       actor_user: @refresh_token.user,
       target: @refresh_token,
       metadata: { device_name: @refresh_token.device_name },

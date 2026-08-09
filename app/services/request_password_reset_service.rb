@@ -8,7 +8,7 @@ class RequestPasswordResetService < ApplicationService
 
     if user
       UserMailer.password_reset_email(user).deliver_later
-      AuditLogger.log(action: 'password_reset.requested', actor_user: user)
+      AuditLogger.log(action: "password_reset.requested", actor_user: user)
     end
 
     ServiceResult.success(true)

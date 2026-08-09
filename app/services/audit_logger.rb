@@ -21,7 +21,7 @@ class AuditLogger
 
   def self.scrub(metadata)
     metadata.each_with_object({}) do |(key, value), result|
-      result[key] = SENSITIVE_KEYS.include?(key.to_sym) ? '[REDACTED]' : value
+      result[key] = SENSITIVE_KEYS.include?(key.to_sym) ? "[REDACTED]" : value
     end
   end
   private_class_method :scrub

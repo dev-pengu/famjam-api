@@ -6,11 +6,11 @@ class UpdatePersonService < ApplicationService
   end
 
   def call
-    previous_attributes = @person.attributes.slice('first_name', 'last_name', 'nickname')
+    previous_attributes = @person.attributes.slice("first_name", "last_name", "nickname")
     @person.update!(@attributes)
 
     AuditLogger.log(
-      action: self_edit? ? 'person.self_updated' : 'person.updated',
+      action: self_edit? ? "person.self_updated" : "person.updated",
       actor_user: @actor,
       family: relevant_family,
       target: @person,

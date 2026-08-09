@@ -30,7 +30,7 @@ class OverlapChecker
   def candidate_occurrences
     @participant_person_ids.flat_map do |person_id|
       OccurrenceMaterializer.call(family: @family, range: @starts_at..@ends_at, participant_person_id: person_id)
-    end.uniq { |occurrence| [occurrence.event.id, occurrence.occurrence_start_at] }
+    end.uniq { |occurrence| [ occurrence.event.id, occurrence.occurrence_start_at ] }
   end
 
   def overlaps?(occurrence)

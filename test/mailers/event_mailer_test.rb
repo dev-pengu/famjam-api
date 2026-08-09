@@ -11,7 +11,7 @@ class EventMailerTest < ActionMailer::TestCase
     )
 
     assert_equal "Reminder: #{event.title}", mail.subject
-    assert_equal [user.email], mail.to
+    assert_equal [ user.email ], mail.to
     assert_match event.title, mail.text_part.body.to_s
     assert_match event.title, mail.html_part.body.to_s
   end
@@ -20,10 +20,10 @@ class EventMailerTest < ActionMailer::TestCase
     subscription = AgendaSubscription.create!(user: users(:jane_admin), family: families(:smith_family), scope: :mine)
     occurrence = OccurrenceMaterializer.call(family: families(:smith_family), range: Time.current..1.week.from_now).first
 
-    mail = EventMailer.agenda_email(subscription: subscription, occurrences: [occurrence])
+    mail = EventMailer.agenda_email(subscription: subscription, occurrences: [ occurrence ])
 
     assert_equal "Your upcoming agenda", mail.subject
-    assert_equal [users(:jane_admin).email], mail.to
+    assert_equal [ users(:jane_admin).email ], mail.to
     assert_match occurrence.title, mail.text_part.body.to_s
   end
 

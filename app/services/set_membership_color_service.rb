@@ -10,7 +10,7 @@ class SetMembershipColorService < ApplicationService
     @membership.update!(color: @color)
 
     AuditLogger.log(
-      action: 'member.color_changed',
+      action: "member.color_changed",
       actor_user: @actor,
       family: @membership.family,
       target: @membership,

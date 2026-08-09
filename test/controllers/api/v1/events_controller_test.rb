@@ -23,18 +23,18 @@ class Api::V1::EventsControllerTest < ActionDispatch::IntegrationTest
     post api_v1_family_events_url(@family), headers: auth_headers(users(:jane_admin)), params: {
       title: "Piano Recital", timezone: "America/Chicago",
       starts_at: 3.days.from_now.iso8601, ends_at: 3.days.from_now.iso8601,
-      participant_person_ids: [people(:sam_child).id],
+      participant_person_ids: [ people(:sam_child).id ]
     }
 
     assert_response :created
     body = JSON.parse(response.body)
     assert_equal "Piano Recital", body["title"]
-    assert_equal [people(:sam_child).id], body["participants"].map { |p| p["id"] }
+    assert_equal [ people(:sam_child).id ], body["participants"].map { |p| p["id"] }
   end
 
   test "create is invalid without a title" do
     post api_v1_family_events_url(@family), headers: auth_headers(users(:jane_admin)), params: {
-      timezone: "America/Chicago", starts_at: 3.days.from_now.iso8601, ends_at: 3.days.from_now.iso8601,
+      timezone: "America/Chicago", starts_at: 3.days.from_now.iso8601, ends_at: 3.days.from_now.iso8601
     }
 
     assert_response :unprocessable_entity
@@ -42,7 +42,7 @@ class Api::V1::EventsControllerTest < ActionDispatch::IntegrationTest
 
   test "update is forbidden for an adult with no relation to the event" do
     patch api_v1_family_event_url(@family, @event), headers: auth_headers(users(:morgan_adult)), params: {
-      title: "Hijacked",
+      title: "Hijacked"
     }
 
     assert_response :forbidden
@@ -50,7 +50,7 @@ class Api::V1::EventsControllerTest < ActionDispatch::IntegrationTest
 
   test "update succeeds for the family owner" do
     patch api_v1_family_event_url(@family, @event), headers: auth_headers(users(:lazaro_nixon)), params: {
-      title: "Updated Family Dinner",
+      title: "Updated Family Dinner"
     }
 
     assert_response :success

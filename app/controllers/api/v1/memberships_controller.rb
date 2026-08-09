@@ -75,12 +75,34 @@ module Api
       def reactivate
         membership = @family.memberships.find(params[:id])
         authorize membership, :reactivate?
- 
+
         contract = ReactivateMembershipParams.build(params)
         return render_invalid(contract) unless contract.valid?
- 
+
         result = ReactivateMembershipService.call(actor: current_user, membership: membership, role: contract.role)
         render_result(result, serializer: MembershipSerializer)
+      end
+
+      def award_coins
+        membership = @family.memberships.find(params[:id])
+        authorize membership, :award_coins?
+
+        contract = AwardCoinsParams.build(params)
+        return render_invalid(contract) unless contract.valid?
+
+        result = AwardCoinsService.call(actor: current_user, membership: membership, amount: contract.amount, note: contract.note)
+        render_result(result, serializer: CoinTransactionSerializer)
+      end
+
+      def redeem_coins
+        membership = @family.memberships.find(params[:id])
+        authorize membership, :redeem_coins?
+
+        contract = RedeemCoinsParams.build(params)
+        return render_invalid(contract) unless contract.valid?
+
+        result = RedeemCoinsService.call(actor: current_user, membership: membership, amount: contract.amount, note: contract.note)
+        render_result(result, serializer: CoinTransactionSerializer)
       end
 
       private

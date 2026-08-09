@@ -10,7 +10,7 @@ class RevokeAllSessionsService < ApplicationService
       count += 1
     end
 
-    AuditLogger.log(action: 'session.revoked_all', actor_user: @user, metadata: { count: count })
+    AuditLogger.log(action: "session.revoked_all", actor_user: @user, metadata: { count: count })
     ServiceResult.success(count)
   end
 end

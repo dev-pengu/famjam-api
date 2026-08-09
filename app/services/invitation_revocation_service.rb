@@ -5,11 +5,11 @@ class InvitationRevocationService < ApplicationService
   end
 
   def call
-    return ServiceResult.failure(['invitation already used or revoked']) unless @invitation.redeemable?
+    return ServiceResult.failure([ "invitation already used or revoked" ]) unless @invitation.redeemable?
 
     @invitation.revoke!
     AuditLogger.log(
-      action: 'invitation.revoked',
+      action: "invitation.revoked",
       actor_user: @actor,
       family: @invitation.family,
       target: @invitation,

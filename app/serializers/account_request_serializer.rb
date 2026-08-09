@@ -8,7 +8,7 @@ class AccountRequestSerializer < ApplicationSerializer
       status: request.status,
       requested_at: request.requested_at,
       completed_at: request.completed_at,
-      download_url: request.status == 'completed' ? request.download_url : nil,
+      download_url: request.status == "completed" ? request.download_url : nil
     }
   end
 end

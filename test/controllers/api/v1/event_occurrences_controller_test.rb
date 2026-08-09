@@ -23,7 +23,7 @@ class Api::V1::EventOccurrencesControllerTest < ActionDispatch::IntegrationTest
 
   test "PATCH occurrence edits just that occurrence, leaving the series and other occurrences untouched" do
     patch occurrence_api_v1_family_event_url(@family, @event), headers: auth_headers(users(:jane_admin)), params: {
-      occurrence_start_at: @occurrence_start_at.iso8601, title: "Practice Moved to the Park",
+      occurrence_start_at: @occurrence_start_at.iso8601, title: "Practice Moved to the Park"
     }
 
     assert_response :success
@@ -33,7 +33,7 @@ class Api::V1::EventOccurrencesControllerTest < ActionDispatch::IntegrationTest
 
   test "DELETE occurrence cancels just that occurrence" do
     delete occurrence_api_v1_family_event_url(@family, @event), headers: auth_headers(users(:jane_admin)), params: {
-      occurrence_start_at: @occurrence_start_at.iso8601,
+      occurrence_start_at: @occurrence_start_at.iso8601
     }
 
     assert_response :success
@@ -47,7 +47,7 @@ class Api::V1::EventOccurrencesControllerTest < ActionDispatch::IntegrationTest
 
   test "rejects an occurrence_start_at that doesn't correspond to a real occurrence" do
     patch occurrence_api_v1_family_event_url(@family, @event), headers: auth_headers(users(:jane_admin)), params: {
-      occurrence_start_at: (@occurrence_start_at + 3.hours).iso8601, title: "Bogus",
+      occurrence_start_at: (@occurrence_start_at + 3.hours).iso8601, title: "Bogus"
     }
 
     assert_response :unprocessable_entity
@@ -55,7 +55,7 @@ class Api::V1::EventOccurrencesControllerTest < ActionDispatch::IntegrationTest
 
   test "an unrelated adult cannot edit an occurrence" do
     patch occurrence_api_v1_family_event_url(@family, @event), headers: auth_headers(users(:morgan_adult)), params: {
-      occurrence_start_at: @occurrence_start_at.iso8601, title: "Hijacked",
+      occurrence_start_at: @occurrence_start_at.iso8601, title: "Hijacked"
     }
 
     assert_response :forbidden

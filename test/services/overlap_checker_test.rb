@@ -13,16 +13,16 @@ class OverlapCheckerTest < ActiveSupport::TestCase
 
   test "detects a true overlap for a shared participant" do
     overlaps = OverlapChecker.call(
-      family: @family, participant_person_ids: [@person.id],
+      family: @family, participant_person_ids: [ @person.id ],
       starts_at: Time.utc(2026, 6, 1, 17, 30), ends_at: Time.utc(2026, 6, 1, 18, 30),
     )
 
-    assert_equal [@existing], overlaps.map(&:event)
+    assert_equal [ @existing ], overlaps.map(&:event)
   end
 
   test "does not flag an adjacent, non-overlapping event" do
     overlaps = OverlapChecker.call(
-      family: @family, participant_person_ids: [@person.id],
+      family: @family, participant_person_ids: [ @person.id ],
       starts_at: Time.utc(2026, 6, 1, 18), ends_at: Time.utc(2026, 6, 1, 19),
     )
 
@@ -31,7 +31,7 @@ class OverlapCheckerTest < ActiveSupport::TestCase
 
   test "excludes the event being edited via exclude_event_id" do
     overlaps = OverlapChecker.call(
-      family: @family, participant_person_ids: [@person.id],
+      family: @family, participant_person_ids: [ @person.id ],
       starts_at: Time.utc(2026, 6, 1, 17, 30), ends_at: Time.utc(2026, 6, 1, 18, 30),
       exclude_event_id: @existing.id,
     )
@@ -41,7 +41,7 @@ class OverlapCheckerTest < ActiveSupport::TestCase
 
   test "only flags overlaps for participants actually on the existing event" do
     overlaps = OverlapChecker.call(
-      family: @family, participant_person_ids: [people(:morgan_adult).id],
+      family: @family, participant_person_ids: [ people(:morgan_adult).id ],
       starts_at: Time.utc(2026, 6, 1, 17, 30), ends_at: Time.utc(2026, 6, 1, 18, 30),
     )
 

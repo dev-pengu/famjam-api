@@ -14,7 +14,7 @@ module Api
         result = AccountLinkingService.call(
           user: user,
           password: contract.password,
-          provider: 'google',
+          provider: "google",
           provider_uid: contract.provider_uid,
         )
         return render_result(result) if result.failure?

@@ -9,7 +9,7 @@ class RefreshTokenSerializer < ApplicationSerializer
       ip_address: token.ip_address,
       last_used_at: token.last_used_at,
       expires_at: token.expires_at,
-      created_at: token.created_at,
+      created_at: token.created_at
     }
   end
 end

@@ -51,7 +51,7 @@ class DispatchEventRemindersJob < ApplicationJob
   # A reminder with no user applies to every participant who has a login -
   # managed (no-login) children have no email to send to.
   def recipients(reminder, occurrence)
-    return [reminder.user] if reminder.user_id.present?
+    return [ reminder.user ] if reminder.user_id.present?
 
     occurrence.event.people.filter_map(&:user)
   end

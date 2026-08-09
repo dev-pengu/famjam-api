@@ -8,6 +8,6 @@ class CreateGuardianships < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :guardianships, [:family_id, :guardian_user_id, :dependent_person_id], unique: true, name: 'index_guardianships_uniqueness'
+    add_index :guardianships, [ :family_id, :guardian_user_id, :dependent_person_id ], unique: true, name: 'index_guardianships_uniqueness'
   end
 end

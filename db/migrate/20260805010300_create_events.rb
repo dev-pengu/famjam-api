@@ -17,7 +17,7 @@ class CreateEvents < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :events, [:family_id, :starts_at]
+    add_index :events, [ :family_id, :starts_at ]
     add_check_constraint :events, 'ends_at >= starts_at', name: 'events_ends_after_starts_check'
     add_check_constraint :events, 'category IS NULL OR category BETWEEN 0 AND 3', name: 'events_category_check'
   end

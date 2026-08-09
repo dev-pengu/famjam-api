@@ -6,7 +6,7 @@ module Api
 
       def index
         memberships = current_user.memberships.active.includes(:family).order(joined_at: :asc)
-        render json: memberships.map { |m| FamilyWithMembershipSerializer.new(m).as_json}
+        render json: memberships.map { |m| FamilyWithMembershipSerializer.new(m).as_json }
       end
 
       def show

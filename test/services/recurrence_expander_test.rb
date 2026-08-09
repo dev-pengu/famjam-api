@@ -4,7 +4,7 @@ class RecurrenceExpanderTest < ActiveSupport::TestCase
   def build_event(**overrides)
     Event.new({
       family: families(:smith_family), created_by_user: users(:jane_admin), title: "Recurring",
-      timezone: "America/Chicago", ends_at: overrides[:starts_at] + 1.hour,
+      timezone: "America/Chicago", ends_at: overrides[:starts_at] + 1.hour
     }.merge(overrides))
   end
 
@@ -13,7 +13,7 @@ class RecurrenceExpanderTest < ActiveSupport::TestCase
 
     dates = RecurrenceExpander.call(event: event, range: Time.utc(2026, 1, 1)..Time.utc(2026, 1, 11)).map(&:to_date)
 
-    assert_equal [Date.new(2026, 1, 1), Date.new(2026, 1, 4), Date.new(2026, 1, 7), Date.new(2026, 1, 10)], dates
+    assert_equal [ Date.new(2026, 1, 1), Date.new(2026, 1, 4), Date.new(2026, 1, 7), Date.new(2026, 1, 10) ], dates
   end
 
   test "weekly recurrence defaults to the series start's own weekday" do
@@ -23,7 +23,7 @@ class RecurrenceExpanderTest < ActiveSupport::TestCase
     occurrences = RecurrenceExpander.call(event: event, range: Time.utc(2026, 1, 1)..Time.utc(2026, 1, 28))
 
     assert_equal %w[Tue Tue Tue Tue], occurrences.map { |t| t.strftime("%a") }
-    assert_equal [6, 13, 20, 27], occurrences.map { |t| t.day }
+    assert_equal [ 6, 13, 20, 27 ], occurrences.map { |t| t.day }
   end
 
   test "weekly recurrence with an explicit byday list and interval" do
@@ -37,7 +37,7 @@ class RecurrenceExpanderTest < ActiveSupport::TestCase
     days = occurrences.map(&:day).sort
 
     # Week of Jan 5 (included) and week of Jan 19 (every other week), not Jan 12 or Jan 26
-    assert_equal [5, 7, 9, 19, 21, 23], days
+    assert_equal [ 5, 7, 9, 19, 21, 23 ], days
   end
 
   test "weekly recurrence stays at the same local wall-clock time across a US DST transition" do
@@ -48,7 +48,7 @@ class RecurrenceExpanderTest < ActiveSupport::TestCase
     occurrences = RecurrenceExpander.call(event: event, range: Time.utc(2024, 2, 20)..Time.utc(2024, 3, 20))
     local_hours = occurrences.map { |t| ActiveSupport::TimeZone["America/Chicago"].utc_to_local(t).hour }
 
-    assert_equal [17, 17, 17, 17], local_hours # 5pm local every week, before AND after the DST boundary
+    assert_equal [ 17, 17, 17, 17 ], local_hours # 5pm local every week, before AND after the DST boundary
   end
 
   test "monthly recurrence clamps to the last day of a shorter month" do
@@ -56,7 +56,7 @@ class RecurrenceExpanderTest < ActiveSupport::TestCase
 
     occurrences = RecurrenceExpander.call(event: event, range: Time.utc(2023, 1, 1)..Time.utc(2023, 4, 1))
 
-    assert_equal [Date.new(2023, 1, 31), Date.new(2023, 2, 28), Date.new(2023, 3, 31)], occurrences.map(&:to_date)
+    assert_equal [ Date.new(2023, 1, 31), Date.new(2023, 2, 28), Date.new(2023, 3, 31) ], occurrences.map(&:to_date)
   end
 
   test "yearly recurrence skips a Feb 29 series in non-leap years" do
@@ -64,7 +64,7 @@ class RecurrenceExpanderTest < ActiveSupport::TestCase
 
     occurrences = RecurrenceExpander.call(event: event, range: Time.utc(2024, 1, 1)..Time.utc(2028, 3, 1))
 
-    assert_equal [Date.new(2024, 2, 29), Date.new(2028, 2, 29)], occurrences.map(&:to_date)
+    assert_equal [ Date.new(2024, 2, 29), Date.new(2028, 2, 29) ], occurrences.map(&:to_date)
   end
 
   test "returns nothing for a non-recurring event" do
@@ -79,6 +79,6 @@ class RecurrenceExpanderTest < ActiveSupport::TestCase
     )
 
     occurrences = RecurrenceExpander.call(event: event, range: Time.utc(2026, 1, 1)..Time.utc(2026, 1, 10))
-    assert_equal [1, 2, 3], occurrences.map(&:day)
+    assert_equal [ 1, 2, 3 ], occurrences.map(&:day)
   end
 end

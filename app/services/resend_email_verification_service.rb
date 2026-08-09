@@ -4,10 +4,10 @@ class ResendEmailVerificationService < ApplicationService
   end
 
   def call
-    return ServiceResult.failure(['email is already verified']) if @user.verified?
+    return ServiceResult.failure([ "email is already verified" ]) if @user.verified?
 
     UserMailer.verification_email(@user).deliver_later
-    AuditLogger.log(action: 'email.verification_resent', actor_user: @user)
+    AuditLogger.log(action: "email.verification_resent", actor_user: @user)
 
     ServiceResult.success(true)
   end

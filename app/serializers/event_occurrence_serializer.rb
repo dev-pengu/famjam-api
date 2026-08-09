@@ -14,7 +14,7 @@ class EventOccurrenceSerializer < ApplicationSerializer
       cancelled: occurrence.cancelled?,
       modified: occurrence.modified?,
       series: occurrence.series?,
-      event: EventSerializer.new(occurrence.event).as_json,
+      event: EventSerializer.new(occurrence.event).as_json
     }
   end
 end

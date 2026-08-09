@@ -15,7 +15,7 @@ module Api
           payload = GoogleIdTokenVerifier.verify(contract.id_token)
 
           result = OauthSignupOrLoginService.call(
-            provider: 'google',
+            provider: "google",
             provider_uid: payload[:sub],
             email: payload[:email],
             first_name: payload[:first_name],
@@ -24,7 +24,7 @@ module Api
           )
 
           if result.failure? && linking_required?(result)
-            return render json: { error: 'linking_required', user_id: result.errors.first[:user_id], provider_uid: payload[:sub] }, status: :conflict
+            return render json: { error: "linking_required", user_id: result.errors.first[:user_id], provider_uid: payload[:sub] }, status: :conflict
           end
 
           return render_result(result) if result.failure?
@@ -37,7 +37,7 @@ module Api
           )
           render json: tokens, status: :created
         rescue Google::Auth::IDTokens::SignatureError => e
-          return render json: { error: 'Invalid token signature', status: :unauthorized }
+          render json: { error: "Invalid token signature", status: :unauthorized }
         rescue StandardError => e
           render json: { error: e.message, status: :unprocessable_entity }
         end

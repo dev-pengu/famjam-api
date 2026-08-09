@@ -10,13 +10,13 @@ class CreateEventServiceTest < ActiveSupport::TestCase
     result = CreateEventService.call(
       actor: @actor, family: @family, title: "Book Club", timezone: "America/Chicago",
       starts_at: 1.day.from_now, ends_at: 1.day.from_now + 1.hour,
-      participant_person_ids: [people(:jane_admin).id],
+      participant_person_ids: [ people(:jane_admin).id ],
     )
 
     assert result.success?
     event = result.data
     assert_equal @actor, event.created_by_user
-    assert_equal [people(:jane_admin)], event.people
+    assert_equal [ people(:jane_admin) ], event.people
   end
 
   test "whole-family events snapshot the family's active members at creation time" do

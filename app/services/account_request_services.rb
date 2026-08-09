@@ -5,7 +5,7 @@ class CreateDataExportRequestService < ApplicationService
 
   def call
     request = @user.account_requests.create!(kind: :export, status: :pending)
-    AuditLogger.log(action: 'account.export_requested', actor_user: @user, target: request)
+    AuditLogger.log(action: "account.export_requested", actor_user: @user, target: request)
     # TODO stubbing out a likely job call
     # AccountRequests::ExportJob.perform_later(request)
     ServiceResult.success(request)
@@ -21,7 +21,7 @@ class CreateAccountDeletionRequestService < ApplicationService
 
   def call
     request = @user.account_requests.create!(kind: :deletion, status: :pending)
-    AuditLogger.log(action: 'account.deletion_requested', actor_user: @user, target: request)
+    AuditLogger.log(action: "account.deletion_requested", actor_user: @user, target: request)
     # TODO stubbing out a likely job call
     # AccountRequests::DeletionJob.perform_later(request)
     ServiceResult.success(request)

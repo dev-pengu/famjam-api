@@ -21,13 +21,13 @@ class ApplicationController < ActionController::API
     end
 
     def bearer_token
-      request.headers['Authorization']&.split(' ')&.last
+      request.headers["Authorization"]&.split(" ")&.last
     end
 
     def current_family
       return @current_family if defined?(@current_family)
 
-      family_id = request.headers['X-Family-Id'] || params[:family_id]
+      family_id = request.headers["X-Family-Id"] || params[:family_id]
       @current_family = family_id ? current_user&.families&.find_by(id: family_id) : nil
     end
 
@@ -38,7 +38,7 @@ class ApplicationController < ActionController::API
     def require_verified_email!
       return if current_user&.verified?
 
-      render json: { error: 'email must be verified first' }, status: :forbidden
+      render json: { error: "email must be verified first" }, status: :forbidden
     end
 
     def render_result(result, status: :ok, serializer: nil)
@@ -51,18 +51,18 @@ class ApplicationController < ActionController::API
     end
 
     def render_unauthorized(_e = nil)
-      render json: { error: 'unauthorized' }, status: :unauthorized
+      render json: { error: "unauthorized" }, status: :unauthorized
     end
-    
+
     def render_invalid(contract)
       render json: { errors: contract.errors.full_messages }, status: :unprocessable_entity
     end
 
     def render_forbidden(_e)
-      render json: { error: 'forbidden' }, status: :forbidden
+      render json: { error: "forbidden" }, status: :forbidden
     end
 
     def render_not_found(_e)
-      render json: { error: 'not found' }, status: :not_found
+      render json: { error: "not found" }, status: :not_found
     end
 end

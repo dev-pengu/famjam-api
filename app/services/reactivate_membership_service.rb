@@ -9,21 +9,21 @@ class ReactivateMembershipService < ApplicationService
     @membership = membership
     @role = role
   end
- 
+
   def call
-    return ServiceResult.failure(['membership is already active']) if @membership.active?
- 
+    return ServiceResult.failure([ "membership is already active" ]) if @membership.active?
+
     previous_role = @membership.role
     @membership.reactivate!(role: @role, invited_by_user: @actor)
- 
+
     AuditLogger.log(
-      action: 'member.reactivated',
+      action: "member.reactivated",
       actor_user: @actor,
       family: @membership.family,
       target: @membership,
       metadata: { previous_role: previous_role, new_role: @membership.role },
     )
- 
+
     ServiceResult.success(@membership)
   rescue ActiveRecord::RecordInvalid => e
     ServiceResult.failure(e.record.errors.full_messages)

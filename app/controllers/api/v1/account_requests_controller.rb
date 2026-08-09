@@ -9,7 +9,7 @@ module Api
         contract = AccountRequestParams.build(params)
         return render_invalid(contract) unless contract.valid?
 
-        service = contract.kind == 'deletion' ? CreateAccountDeletionRequestService : CreateDataExportRequestService
+        service = contract.kind == "deletion" ? CreateAccountDeletionRequestService : CreateDataExportRequestService
         result = service.call(user: current_user)
         return render_result(result) if result.failure?
 

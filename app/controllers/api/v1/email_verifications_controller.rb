@@ -10,7 +10,7 @@ module Api
         result = VerifyEmailService.call(token: contract.token)
         return render_result(result) if result.failure?
 
-        render json: { message: 'email verified' }
+        render json: { message: "email verified" }
       end
 
       def resend

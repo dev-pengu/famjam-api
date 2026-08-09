@@ -17,7 +17,7 @@ class OauthSignupOrLoginService < ApplicationService
 
     existing_user = User.find_by(email: @email)
     if existing_user
-      return ServiceResult.failure([{ code: :linking_required, user_id: existing_user.id }])
+      return ServiceResult.failure([ { code: :linking_required, user_id: existing_user.id } ])
     end
 
     user = nil
@@ -31,7 +31,7 @@ class OauthSignupOrLoginService < ApplicationService
       user.identities.create!(provider: @provider, provider_uid: @provider_uid)
     end
 
-    AuditLogger.log(action: 'user.signed_up', actor_user: user, metadata: { method: @provider })
+    AuditLogger.log(action: "user.signed_up", actor_user: user, metadata: { method: @provider })
     ServiceResult.success(user)
   rescue ActiveRecord::RecordInvalid => e
     ServiceResult.failure(e.record.errors.full_messages)

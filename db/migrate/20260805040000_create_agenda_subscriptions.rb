@@ -12,7 +12,7 @@ class CreateAgendaSubscriptions < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :agenda_subscriptions, [:enabled, :interval_days]
+    add_index :agenda_subscriptions, [ :enabled, :interval_days ]
     add_check_constraint :agenda_subscriptions, 'interval_days > 0', name: 'agenda_subscriptions_interval_days_check'
     add_check_constraint :agenda_subscriptions, 'send_hour_local BETWEEN 0 AND 23',
       name: 'agenda_subscriptions_send_hour_check'

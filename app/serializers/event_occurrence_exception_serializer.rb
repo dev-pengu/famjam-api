@@ -12,7 +12,7 @@ class EventOccurrenceExceptionSerializer < ApplicationSerializer
       title: exception.title,
       description: exception.description,
       location: exception.location,
-      category: exception.category,
+      category: exception.category
     }
   end
 end

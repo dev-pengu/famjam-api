@@ -6,7 +6,7 @@ class OwnershipTransferService < ApplicationService
 
   def call
     unless @new_owner_membership.family_id == @current_owner_membership.family_id
-      return ServiceResult.failure(['memberships must belong to the same family'])
+      return ServiceResult.failure([ "memberships must belong to the same family" ])
     end
 
     ActiveRecord::Base.transaction do
@@ -15,13 +15,13 @@ class OwnershipTransferService < ApplicationService
     end
 
     AuditLogger.log(
-      action: 'ownership.transferred',
+      action: "ownership.transferred",
       actor_user: @current_owner_membership.person.user,
       family: @current_owner_membership.family,
       target: @new_owner_membership,
       metadata: {
         previous_owner_person_id: @current_owner_membership.person_id,
-        new_owner_person_id: @new_owner_membership.person_id,
+        new_owner_person_id: @new_owner_membership.person_id
       },
     )
 

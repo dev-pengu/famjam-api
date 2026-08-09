@@ -15,7 +15,7 @@ class Api::V1::EventsControllerOverlapTest < ActionDispatch::IntegrationTest
       title: "New Overlapping Event", timezone: "America/Chicago",
       starts_at: 3.days.from_now.change(hour: 17, min: 30).iso8601,
       ends_at: 3.days.from_now.change(hour: 18, min: 30).iso8601,
-      participant_person_ids: [people(:alex_adult).id],
+      participant_person_ids: [ people(:alex_adult).id ]
     }
 
     assert_response :created # non-blocking: still succeeds
@@ -29,7 +29,7 @@ class Api::V1::EventsControllerOverlapTest < ActionDispatch::IntegrationTest
       post check_overlap_api_v1_family_events_url(@family), headers: auth_headers(users(:jane_admin)), params: {
         starts_at: 3.days.from_now.change(hour: 17, min: 30).iso8601,
         ends_at: 3.days.from_now.change(hour: 18, min: 30).iso8601,
-        participant_person_ids: [people(:alex_adult).id],
+        participant_person_ids: [ people(:alex_adult).id ]
       }
     end
 
@@ -42,7 +42,7 @@ class Api::V1::EventsControllerOverlapTest < ActionDispatch::IntegrationTest
   test "check_overlap returns nothing for a non-conflicting time" do
     post check_overlap_api_v1_family_events_url(@family), headers: auth_headers(users(:jane_admin)), params: {
       starts_at: 10.days.from_now.iso8601, ends_at: (10.days.from_now + 1.hour).iso8601,
-      participant_person_ids: [people(:alex_adult).id],
+      participant_person_ids: [ people(:alex_adult).id ]
     }
 
     assert_response :success

@@ -1,7 +1,6 @@
 module Api
   module V1
     class ProfileController < ApplicationController
-      
       def show
         render json: UserSerializer.new(current_user)
       end

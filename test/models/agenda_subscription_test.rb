@@ -3,7 +3,7 @@ require "test_helper"
 class AgendaSubscriptionTest < ActiveSupport::TestCase
   def build_subscription(**overrides)
     AgendaSubscription.new({
-      user: users(:jane_admin), family: families(:smith_family), interval_days: 7, send_hour_local: 7,
+      user: users(:jane_admin), family: families(:smith_family), interval_days: 7, send_hour_local: 7
     }.merge(overrides))
   end
 

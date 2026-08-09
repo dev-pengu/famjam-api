@@ -37,24 +37,24 @@ class ApplicationPolicy
   end
 
   private
- 
+
     def membership
       context.membership
     end
-  
+
     def role
       membership&.role
     end
-  
-    def owner? = role == 'owner'
-    def admin? = role == 'admin'
-    def adult? = role == 'adult'
-    def child? = role == 'child'
-  
+
+    def owner? = role == "owner"
+    def admin? = role == "admin"
+    def adult? = role == "adult"
+    def child? = role == "child"
+
     def owner_or_admin?
       owner? || admin?
     end
-  
+
     # True if the current user is a registered guardian of the given dependent Person,
     # within the family the policy is scoped to.
     def guardian_of?(person)

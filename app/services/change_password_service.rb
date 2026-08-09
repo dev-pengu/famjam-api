@@ -10,12 +10,12 @@ class ChangePasswordService < ApplicationService
 
   def call
     unless @user.authenticate(@current_password)
-      AuditLogger.log(action: 'password_change.failed', actor_user: @user, metadata: { ip_address: @ip_address })
-      return ServiceResult.failure(['current password is incorrect'])
+      AuditLogger.log(action: "password_change.failed", actor_user: @user, metadata: { ip_address: @ip_address })
+      return ServiceResult.failure([ "current password is incorrect" ])
     end
 
     if @user.authenticate(@new_password)
-      return ServiceResult.failure(['new password must be different from your current password'])
+      return ServiceResult.failure([ "new password must be different from your current password" ])
     end
 
     tokens = nil
@@ -28,7 +28,7 @@ class ChangePasswordService < ApplicationService
       )
     end
 
-    AuditLogger.log(action: 'password_change.completed', actor_user: @user, metadata: { ip_address: @ip_address })
+    AuditLogger.log(action: "password_change.completed", actor_user: @user, metadata: { ip_address: @ip_address })
     ServiceResult.success(tokens)
   rescue ActiveRecord::RecordInvalid => e
     ServiceResult.failure(e.record.errors.full_messages)

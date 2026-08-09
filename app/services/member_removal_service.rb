@@ -7,7 +7,7 @@ class MemberRemovalService < ApplicationService
   def call
     @membership.remove!
     AuditLogger.log(
-      action: 'member.removed',
+      action: "member.removed",
       actor_user: @actor,
       family: @membership.family,
       target: @membership,

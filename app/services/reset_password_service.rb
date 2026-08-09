@@ -6,7 +6,7 @@ class ResetPasswordService < ApplicationService
 
   def call
     user = User.find_by_token_for(:password_reset, @token)
-    return ServiceResult.failure(['invalid or expired reset link']) unless user
+    return ServiceResult.failure([ "invalid or expired reset link" ]) unless user
 
     ActiveRecord::Base.transaction do
       user.update!(password: @new_password)
@@ -14,7 +14,7 @@ class ResetPasswordService < ApplicationService
       user.refresh_tokens.active.find_each(&:revoke!)
     end
 
-    AuditLogger.log(action: 'password_reset.completed', actor_user: user)
+    AuditLogger.log(action: "password_reset.completed", actor_user: user)
     ServiceResult.success(user)
   rescue ActiveRecord::RecordInvalid => e
     ServiceResult.failure(e.record.errors.full_messages)

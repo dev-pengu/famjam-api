@@ -12,7 +12,7 @@ module Api
         token = IcalFeedToken.find_by(token: params[:token])
         return render_not_found(nil) unless token
 
-        render plain: IcalFeedGeneratorService.call(user: token.user), content_type: 'text/calendar'
+        render plain: IcalFeedGeneratorService.call(user: token.user), content_type: "text/calendar"
       end
     end
   end

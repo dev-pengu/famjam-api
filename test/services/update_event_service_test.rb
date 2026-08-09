@@ -15,17 +15,17 @@ class UpdateEventServiceTest < ActiveSupport::TestCase
 
     assert result.success?
     assert_equal "Renamed Practice", @event.reload.title
-    assert_equal [people(:jane_admin)], @event.people
+    assert_equal [ people(:jane_admin) ], @event.people
   end
 
   test "participant_person_ids reconciles the participant list (adds and removes)" do
     result = UpdateEventService.call(
       event: @event,
-      attributes: { participant_person_ids: [people(:alex_adult).id] },
+      attributes: { participant_person_ids: [ people(:alex_adult).id ] },
     )
 
     assert result.success?
-    assert_equal [people(:alex_adult)], @event.reload.people
+    assert_equal [ people(:alex_adult) ], @event.reload.people
   end
 
   test "an empty participant_person_ids array explicitly clears participants" do

@@ -9,7 +9,7 @@ class Family < ApplicationRecord
   validates :name, presence: true
 
   DEFAULT_INVITATION_TTL_HOURS = 72
-  DEFAULT_TIMEZONE = 'UTC'
+  DEFAULT_TIMEZONE = "UTC"
 
   def owner_membership
     memberships.active.find_by(role: :owner)

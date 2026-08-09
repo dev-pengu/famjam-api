@@ -14,8 +14,8 @@ class Api::V1::NotificationPreferencesControllerTest < ActionDispatch::Integrati
     patch api_v1_notification_preferences_url, headers: auth_headers(users(:jane_admin)), params: {
       preferences: [
         { notification_type: "event_reminder", enabled: false },
-        { notification_type: "agenda_email", enabled: false },
-      ],
+        { notification_type: "agenda_email", enabled: false }
+      ]
     }
 
     assert_response :success
@@ -26,7 +26,7 @@ class Api::V1::NotificationPreferencesControllerTest < ActionDispatch::Integrati
 
   test "update rejects an unrecognized notification_type" do
     patch api_v1_notification_preferences_url, headers: auth_headers(users(:jane_admin)), params: {
-      preferences: [{ notification_type: "not_a_real_type", enabled: false }],
+      preferences: [ { notification_type: "not_a_real_type", enabled: false } ]
     }
 
     assert_response :unprocessable_entity

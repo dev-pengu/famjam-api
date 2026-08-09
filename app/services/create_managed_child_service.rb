@@ -18,7 +18,7 @@ class CreateManagedChildService < ApplicationService
     end
 
     AuditLogger.log(
-      action: 'member.managed_child_created',
+      action: "member.managed_child_created",
       actor_user: @actor,
       family: @family,
       target: membership,

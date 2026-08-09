@@ -14,7 +14,7 @@ class ClaimManagedAccountService < ApplicationService
   end
 
   def call
-    return ServiceResult.failure(['this profile already has its own login']) unless @person.managed?
+    return ServiceResult.failure([ "this profile already has its own login" ]) unless @person.managed?
 
     user = nil
     removed_guardian_count = 0
@@ -32,7 +32,7 @@ class ClaimManagedAccountService < ApplicationService
     UserMailer.verification_email(user).deliver_later
 
     AuditLogger.log(
-      action: 'person.account_claimed',
+      action: "person.account_claimed",
       actor_user: @actor,
       family: @membership.family,
       target: user,

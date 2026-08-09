@@ -8,11 +8,11 @@ class AdminRevocationService < ApplicationService
     @membership.update!(role: :adult)
 
     AuditLogger.log(
-      action: 'member.role_changed',
+      action: "member.role_changed",
       actor_user: @actor,
       family: @membership.family,
       target: @membership,
-      metadata: { from: 'admin', to: 'adult' },
+      metadata: { from: "admin", to: "adult" },
     )
 
     ServiceResult.success(@membership)
