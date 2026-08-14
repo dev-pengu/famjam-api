@@ -13,6 +13,8 @@ class User < ApplicationRecord
   has_many :dependents, through: :guardianships, source: :dependent_person
   has_many :created_invitations, class_name: "Invitation", foreign_key: :created_by_user_id
   has_many :created_events, class_name: "Event", foreign_key: :created_by_user_id
+  has_many :created_chores, class_name: "Chore", foreign_key: :created_by_user_id
+  has_many :created_rewards, class_name: "Reward", foreign_key: :created_by_user_id
   has_many :event_reminders, dependent: :destroy
   has_many :notification_preferences, dependent: :destroy
   has_many :agenda_subscriptions, dependent: :destroy

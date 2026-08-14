@@ -3,6 +3,9 @@ class Membership < ApplicationRecord
   belongs_to :person
   belongs_to :invited_by_user, class_name: "User", optional: true
   has_many :coin_transactions, dependent: :destroy
+  has_many :chores, foreign_key: :assignee_id, inverse_of: :assignee, dependent: :destroy
+  has_many :chore_completions, foreign_key: :completed_by_membership_id, inverse_of: :completed_by_membership, dependent: :destroy
+  has_many :reward_redemptions, foreign_key: :claimee_id, inverse_of: :claimee, dependent: :destroy
 
   enum :role, { owner: 0, admin: 1, adult: 2, child: 3 }
   enum :status, { active: 0, left: 1, removed: 2 }

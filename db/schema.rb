@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_09_020000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_09_060000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -62,6 +62,49 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_09_020000) do
     t.index ["actor_user_id"], name: "index_audit_logs_on_actor_user_id"
     t.index ["family_id"], name: "index_audit_logs_on_family_id"
     t.index ["target_type", "target_id"], name: "index_audit_logs_on_target_type_and_target_id"
+  end
+
+  create_table "chore_completions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "chore_id", null: false
+    t.uuid "coin_transaction_id"
+    t.integer "coin_value", null: false
+    t.date "completed_at"
+    t.uuid "completed_by_membership_id", null: false
+    t.datetime "created_at", null: false
+    t.date "due_on"
+    t.string "rejection_reason"
+    t.date "reviewed_at"
+    t.uuid "reviewed_by_user_id"
+    t.integer "status", null: false
+    t.datetime "updated_at", null: false
+    t.index ["chore_id", "due_on"], name: "index_chore_completions_on_chore_id_and_due_on", unique: true
+    t.index ["chore_id"], name: "index_chore_completions_on_chore_id"
+    t.index ["coin_transaction_id"], name: "index_chore_completions_on_coin_transaction_id"
+    t.index ["completed_by_membership_id"], name: "index_chore_completions_on_completed_by_membership_id"
+    t.index ["reviewed_by_user_id"], name: "index_chore_completions_on_reviewed_by_user_id"
+    t.check_constraint "status >= 0 AND status <= 2", name: "chores_completion_status_check"
+  end
+
+  create_table "chores", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "assignee_id", null: false
+    t.integer "coin_value"
+    t.datetime "created_at", null: false
+    t.uuid "created_by_user_id", null: false
+    t.string "description"
+    t.uuid "family_id", null: false
+    t.string "recurrence_byday", default: [], array: true
+    t.integer "recurrence_frequency"
+    t.integer "recurrence_interval", default: 1
+    t.date "recurrence_until"
+    t.datetime "starts_on"
+    t.integer "status", null: false
+    t.string "title"
+    t.datetime "updated_at", null: false
+    t.index ["assignee_id"], name: "index_chores_on_assignee_id"
+    t.index ["created_by_user_id"], name: "index_chores_on_created_by_user_id"
+    t.index ["family_id"], name: "index_chores_on_family_id"
+    t.check_constraint "coin_value >= 0", name: "coin_value_check"
+    t.check_constraint "recurrence_frequency IS NULL OR recurrence_frequency >= 0 AND recurrence_frequency <= 3", name: "chores_recurrence_frequency_check"
   end
 
   create_table "coin_transactions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -276,6 +319,40 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_09_020000) do
     t.index ["user_id"], name: "index_refresh_tokens_on_user_id"
   end
 
+  create_table "reward_redemptions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "claimee_id", null: false
+    t.integer "coin_cost", null: false
+    t.uuid "coin_transaction_id"
+    t.datetime "created_at", null: false
+    t.string "denial_reason"
+    t.date "requested_at", null: false
+    t.date "reviewed_at"
+    t.uuid "reviewed_by_user_id"
+    t.uuid "reward_id", null: false
+    t.integer "status", null: false
+    t.datetime "updated_at", null: false
+    t.index ["claimee_id"], name: "index_reward_redemptions_on_claimee_id"
+    t.index ["coin_transaction_id"], name: "index_reward_redemptions_on_coin_transaction_id"
+    t.index ["reviewed_by_user_id"], name: "index_reward_redemptions_on_reviewed_by_user_id"
+    t.index ["reward_id"], name: "index_reward_redemptions_on_reward_id"
+    t.check_constraint "status >= 0 AND status <= 3", name: "reward_redemption_status_check"
+  end
+
+  create_table "rewards", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.integer "coin_cost", null: false
+    t.datetime "created_at", null: false
+    t.uuid "created_by_user_id", null: false
+    t.string "description"
+    t.uuid "family_id", null: false
+    t.integer "status", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_by_user_id"], name: "index_rewards_on_created_by_user_id"
+    t.index ["family_id"], name: "index_rewards_on_family_id"
+    t.check_constraint "coin_cost > 0", name: "coin_cost_check"
+    t.check_constraint "status >= 0 AND status <= 1", name: "reward_status_check"
+  end
+
   create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "active_family_id"
     t.datetime "created_at", null: false
@@ -299,6 +376,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_09_020000) do
   add_foreign_key "agenda_subscriptions", "users", on_delete: :cascade
   add_foreign_key "audit_logs", "families"
   add_foreign_key "audit_logs", "users", column: "actor_user_id"
+  add_foreign_key "chore_completions", "chores"
+  add_foreign_key "chore_completions", "coin_transactions"
+  add_foreign_key "chore_completions", "memberships", column: "completed_by_membership_id"
+  add_foreign_key "chore_completions", "users", column: "reviewed_by_user_id"
+  add_foreign_key "chores", "families", on_delete: :cascade
+  add_foreign_key "chores", "memberships", column: "assignee_id"
+  add_foreign_key "chores", "users", column: "created_by_user_id"
   add_foreign_key "coin_transactions", "memberships"
   add_foreign_key "coin_transactions", "users", column: "created_by_user_id"
   add_foreign_key "event_occurrence_exceptions", "events", on_delete: :cascade
@@ -325,6 +409,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_09_020000) do
   add_foreign_key "memberships", "users", column: "invited_by_user_id"
   add_foreign_key "notification_preferences", "users", on_delete: :cascade
   add_foreign_key "refresh_tokens", "users"
+  add_foreign_key "reward_redemptions", "coin_transactions"
+  add_foreign_key "reward_redemptions", "memberships", column: "claimee_id"
+  add_foreign_key "reward_redemptions", "rewards"
+  add_foreign_key "reward_redemptions", "users", column: "reviewed_by_user_id"
+  add_foreign_key "rewards", "families", on_delete: :cascade
+  add_foreign_key "rewards", "users", column: "created_by_user_id"
   add_foreign_key "users", "families", column: "active_family_id"
   add_foreign_key "users", "people"
 end

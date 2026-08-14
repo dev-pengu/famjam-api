@@ -78,6 +78,27 @@ Rails.application.routes.draw do
           resources :reminders, only: %i[index create destroy], controller: "event_reminders"
         end
         resources :agenda_subscriptions, only: %i[index create update destroy]
+
+        resources :chores, only: %i[index create update destroy] do
+          member { post :complete }
+        end
+        resources :chore_completions, only: [ :index ] do
+          member do
+            post :approve
+            post :reject
+          end
+        end
+
+        resources :rewards, only: %i[index show create update destroy] do
+          member { post :request_redemption }
+        end
+        resources :reward_redemptions, only: [ :index ] do
+          member do
+            post :approve
+            post :deny
+            post :cancel
+          end
+        end
       end
 
       resource :notification_preferences, only: %i[show update], controller: "notification_preferences"

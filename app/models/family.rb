@@ -5,6 +5,10 @@ class Family < ApplicationRecord
   has_many :guardianships, dependent: :destroy
   has_many :events, dependent: :destroy
   has_many :agenda_subscriptions, dependent: :destroy
+  has_many :chores, dependent: :destroy
+  has_many :chore_completions, through: :chores
+  has_many :rewards, dependent: :destroy
+  has_many :reward_redemptions, through: :rewards
 
   validates :name, presence: true
 

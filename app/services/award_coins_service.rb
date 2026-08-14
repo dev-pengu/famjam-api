@@ -9,7 +9,7 @@ class AwardCoinsService < ApplicationService
   def call
     entry = nil
 
-    ActiveRecord::Base.transaction do
+    ActiveRecord::Base.transaction(requires_new: true) do
       @membership.lock!
       entry = @membership.coin_transactions.create!(
         kind: :credit, amount: @amount, note: @note, created_by_user: @actor,

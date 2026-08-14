@@ -1,6 +1,8 @@
 class CoinTransaction < ApplicationRecord
   belongs_to :membership
   belongs_to :created_by_user, class_name: "User"
+  has_one :chore_completion, inverse_of: :coin_transaction
+  has_one :reward_redemption, inverse_of: :coin_transaction
 
   enum :kind, { credit: 0, debit: 1 }
 
