@@ -1,9 +1,3 @@
-# What this does NOT do: change the person's family role. Claiming a login
-# and being an "adult" are orthogonal - a self-managed CHILD account is a
-# perfectly valid end state. If age-up should happen too, call AgeUpService
-# separately; conflating the two would take away the option of a child who
-# self-manages their own login while still being treated as a child
-# permission-wise.
 class ClaimManagedAccountService < ApplicationService
   def initialize(actor:, membership:, email:, password:)
     @actor = actor
@@ -24,7 +18,7 @@ class ClaimManagedAccountService < ApplicationService
 
       # Once this person can log in and manage their own account, an adult
       # being registered as their "guardian" (with edit rights over their
-      # profile - see PersonPolicy) no longer makes sense
+      # profile) no longer makes sense
       removed_guardian_count = @person.guardianships.count
       @person.guardianships.destroy_all
     end

@@ -24,8 +24,10 @@ module Api
           authorize @event, :manage_participants?, policy_class: EventPolicy
         end
 
-        result = CreateEventReminderService.call(event: @event, minutes_before: contract.minutes_before, user_id: contract.user_id)
-        render_result(result, status: :created, serializer: EventReminderSerializer)
+        reminder = @event.event_reminders.create(minutes_before: contract.minutes_before, user_id: contract.user_id)
+        return render_invalid(reminder) unless reminder.persisted?
+
+        render json: EventReminderSerializer.new(reminder), status: :created
       end
 
       def destroy
@@ -37,8 +39,8 @@ module Api
           authorize @event, :manage_participants?, policy_class: EventPolicy
         end
 
-        result = DestroyEventReminderService.call(event_reminder: reminder)
-        render_result(result)
+        reminder.destroy!
+        render json: true
       end
 
       private

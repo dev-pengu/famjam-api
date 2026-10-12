@@ -10,16 +10,18 @@ module Api
         return render_invalid(contract) unless contract.valid?
 
         person = @family.people.find(contract.person_id)
-        result = AddEventParticipantService.call(event: @event, person: person)
-        render_result(result, status: :created, serializer: EventParticipantSerializer)
+        participant = @event.event_participants.create(person: person)
+        return render_invalid(participant) unless participant.persisted?
+
+        render json: EventParticipantSerializer.new(participant), status: :created
       end
 
       def destroy
         authorize @event, :manage_participants?, policy_class: EventPolicy
         participant = @event.event_participants.find(params[:id])
+        participant.destroy!
 
-        result = RemoveEventParticipantService.call(event_participant: participant)
-        render_result(result)
+        render json: true
       end
 
       private

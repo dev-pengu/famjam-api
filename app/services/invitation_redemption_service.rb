@@ -21,14 +21,6 @@ class InvitationRedemptionService < ApplicationService
       membership = @person.memberships.find_by(family: invitation.family)
     end
 
-    AuditLogger.log(
-      action: "invitation.redeemed",
-      actor_user: @person.user,
-      family: invitation.family,
-      target: membership,
-      metadata: { role: invitation.role },
-    )
-
     ServiceResult.success(membership)
   rescue RuntimeError => e
     ServiceResult.failure([ e.message ])

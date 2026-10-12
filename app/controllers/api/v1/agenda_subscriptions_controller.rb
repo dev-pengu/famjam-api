@@ -13,8 +13,10 @@ module Api
         contract = AgendaSubscriptionCreateParams.build(params)
         return render_invalid(contract) unless contract.valid?
 
-        result = CreateAgendaSubscriptionService.call(user: current_user, family: @family, **contract.to_service_args)
-        render_result(result, status: :created, serializer: AgendaSubscriptionSerializer)
+        subscription = current_user.agenda_subscriptions.create(family: @family, **contract.to_service_args)
+        return render_invalid(subscription) unless subscription.persisted?
+
+        render json: AgendaSubscriptionSerializer.new(subscription), status: :created
       end
 
       def update
@@ -23,16 +25,17 @@ module Api
         contract = AgendaSubscriptionUpdateParams.build(params)
         return render_invalid(contract) unless contract.valid?
 
-        result = UpdateAgendaSubscriptionService.call(subscription: subscription, attributes: contract.to_service_args)
-        render_result(result, serializer: AgendaSubscriptionSerializer)
+        return render_invalid(subscription) unless subscription.update(contract.to_service_args)
+
+        render json: AgendaSubscriptionSerializer.new(subscription)
       end
 
       def destroy
         subscription = current_user.agenda_subscriptions.find(params[:id])
         authorize subscription
+        subscription.destroy!
 
-        result = DestroyAgendaSubscriptionService.call(subscription: subscription)
-        render_result(result)
+        render json: true
       end
 
       private

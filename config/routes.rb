@@ -80,7 +80,12 @@ Rails.application.routes.draw do
         resources :agenda_subscriptions, only: %i[index create update destroy]
 
         resources :chores, only: %i[index create update destroy] do
-          member { post :complete }
+          collection { get :search }
+          member do
+            post :complete
+            post :claim
+            post :reassign
+          end
         end
         resources :chore_completions, only: [ :index ] do
           member do

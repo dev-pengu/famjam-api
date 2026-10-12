@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_09_060000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_01_020000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -86,7 +86,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_09_060000) do
   end
 
   create_table "chores", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "assignee_id", null: false
+    t.uuid "assignee_id"
+    t.integer "category"
     t.integer "coin_value"
     t.datetime "created_at", null: false
     t.uuid "created_by_user_id", null: false
@@ -103,6 +104,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_09_060000) do
     t.index ["assignee_id"], name: "index_chores_on_assignee_id"
     t.index ["created_by_user_id"], name: "index_chores_on_created_by_user_id"
     t.index ["family_id"], name: "index_chores_on_family_id"
+    t.check_constraint "category IS NULL OR category >= 0 AND category <= 5", name: "chores_category_check"
     t.check_constraint "coin_value >= 0", name: "coin_value_check"
     t.check_constraint "recurrence_frequency IS NULL OR recurrence_frequency >= 0 AND recurrence_frequency <= 3", name: "chores_recurrence_frequency_check"
   end

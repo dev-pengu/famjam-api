@@ -2,14 +2,27 @@ module Api
   module V1
     class ChoresController < ApplicationController
       before_action :set_family
-      before_action :set_chore, only: %i[update destroy complete]
+      before_action :set_chore, only: %i[update destroy complete claim reassign]
 
       DEFAULT_INDEX_WINDOW = 6.days
-      
+
       def index
         authorize Chore.new(family: @family), :index?
         occurrences = ChoreOccurrencesQuery.call(family: @family, range: index_range, assignee_id: params[:assignee_id])
         render json: ChoreOccurrenceSerializer.new(occurrences)
+      end
+
+      # The "browse all chores" catalog - one row per chore, searchable/
+      # filterable/sortable, not date-windowed. See index above for the
+      # per-due-date board instead.
+      def search
+        authorize Chore.new(family: @family), :index?
+
+        chores = ChoreSearchQuery.call(
+          family: @family, assignee_id: params[:assignee_id], category: params[:category],
+          coin_min: params[:coin_min], coin_max: params[:coin_max], search: params[:search], sort: params[:sort],
+        )
+        render json: ChoreSerializer.new(chores)
       end
 
       def create
@@ -17,7 +30,7 @@ module Api
         contract = ChoreCreateParams.build(params)
         return render_invalid(contract) unless contract.valid?
 
-        assignee = @family.memberships.find(contract.assignee_id)
+        assignee = contract.assignee_id.present? ? @family.memberships.find(contract.assignee_id) : nil
         chore = @family.chores.create(
           created_by_user: current_user, assignee: assignee, **contract.to_service_args.except(:assignee_id),
         )
@@ -31,10 +44,7 @@ module Api
         contract = ChoreUpdateParams.build(params)
         return render_invalid(contract) unless contract.valid?
 
-        attrs = contract.to_service_args.compact
-        attrs[:assignee] = @family.memberships.find(attrs.delete(:assignee_id)) if attrs[:assignee_id]
-
-        return render_invalid(@chore) unless @chore.update(attrs)
+        return render_invalid(@chore) unless @chore.update(contract.to_service_args.compact)
 
         render json: ChoreSerializer.new(@chore)
       end
@@ -54,6 +64,26 @@ module Api
         return render_invalid(completion) unless completion.persisted?
 
         render json: ChoreCompletionSerializer.new(completion), status: :created
+      end
+
+      # Self-service: claim an open chore for yourself.
+      def claim
+        authorize @chore, :claim?
+        membership = @family.memberships.active.find_by!(person: current_user.person)
+
+        result = ReassignChoreService.call(actor: current_user, chore: @chore, new_assignee: membership)
+        render_result(result, serializer: ChoreSerializer)
+      end
+
+      # Owner/Admin: hand a chore (assigned or not) to any member.
+      def reassign
+        authorize @chore, :reassign?
+        contract = ChoreReassignParams.build(params)
+        return render_invalid(contract) unless contract.valid?
+
+        new_assignee = @family.memberships.find(contract.assignee_id)
+        result = ReassignChoreService.call(actor: current_user, chore: @chore, new_assignee: new_assignee)
+        render_result(result, serializer: ChoreSerializer)
       end
 
       private

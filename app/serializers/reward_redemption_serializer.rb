@@ -6,7 +6,7 @@ class RewardRedemptionSerializer < ApplicationSerializer
       id: reward_redemption.id,
       reward_id: reward_redemption.reward_id,
       claimee_id: reward_redemption.claimee_id,
-      claimee: PersonSerializer.new(reward_redemption.claimee.person).as_json,
+      claimee: MembershipSerializer.new(reward_redemption.claimee).as_json,
       coin_cost: reward_redemption.coin_cost,
       status: reward_redemption.status,
       requested_at: reward_redemption.requested_at,

@@ -12,8 +12,8 @@ module Api
 
         authorize @family.guardianships.new(dependent_person: dependent_person, guardian_user: guardian_user), :create?
 
-        result = AddGuardianService.call(
-          actor: current_user, family: @family, dependent_person: dependent_person, guardian_user: guardian_user,
+        result = @family.add_guardian(
+          actor: current_user, dependent_person: dependent_person, guardian_user: guardian_user,
         )
         render_result(result, status: :created, serializer: GuardianshipSerializer)
       end

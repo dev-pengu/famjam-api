@@ -71,4 +71,20 @@ class User < ApplicationRecord
   def notifies_for?(notification_type)
     notification_preferences.find_by(notification_type: notification_type)&.enabled != false
   end
+
+  def update_notification_preferences!(preferences:)
+    preferences.map do |entry|
+      preference = notification_preferences.find_or_initialize_by(notification_type: entry[:notification_type])
+      preference.update!(enabled: ActiveModel::Type::Boolean.new.cast(entry[:enabled]))
+      preference
+    end
+  end
+
+  def create_account_request(kind:)
+    request = account_requests.create!(kind: kind, status: :pending)
+    AuditLogger.log(action: "account.#{kind}", actor_user: self, target: request)
+    ServiceResult.success(request)
+  rescue ActiveRecord::RecordInvalid => e
+    ServiceResult.failure(e.record.errors.full_messages)
+  end
 end

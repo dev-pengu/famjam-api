@@ -26,6 +26,10 @@ class Membership < ApplicationRecord
     update!(status: :removed, removed_at: Time.current)
   end
 
+  def set_color(color)
+    update(color: color)
+  end
+
   def reactivate!(role: nil, invited_by_user: nil)
     update!(
       role: role || self.role,
@@ -35,6 +39,49 @@ class Membership < ApplicationRecord
       removed_at: nil,
       invited_by_user: invited_by_user || self.invited_by_user
     )
+  end
+
+  def grant_admin(actor:)
+    previous_role = self.role
+    self.update!(role: :admin)
+
+    AuditLogger.log(
+      action: "member.role_changed",
+      actor_user: actor,
+      family: self.family,
+      target: self,
+      metadata: { from: previous_role, to: "admin" },
+    )
+
+    ServiceResult.success(self)
+  end
+
+  def revoke_admin(actor:)
+    self.update!(role: :adult)
+
+    AuditLogger.log(
+      action: "member.role_changed",
+      actor_user: actor,
+      family: self.family,
+      target: self,
+      metadata: { from: "admin", to: "adult" },
+    )
+
+    ServiceResult.success(self)
+  end
+
+  def age_up(actor:)
+    self.update!(role: :adult)
+
+    AuditLogger.log(
+      action: "member.aged_up",
+      actor_user: actor,
+      family: self.family,
+      target: self,
+      metadata: { from: "child", to: "adult" },
+    )
+
+    ServiceResult.success(self)
   end
 
   private

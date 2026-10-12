@@ -1,9 +1,4 @@
-# Builds a .ics calendar body covering all of a user's active families -
-# used by the (unauthenticated, token-gated) iCal feed endpoint that external
-# calendar apps poll on their own schedule. Occurrence times are emitted in
-# UTC rather than with a TZID, which sidesteps needing to also emit a
-# matching VTIMEZONE component while still being fully correct - calendar
-# apps convert a UTC ("Z") time to the viewer's local time automatically.
+# Builds a .ics calendar body covering all of a user's active families  for the iCal feed
 class IcalFeedGeneratorService
   WINDOW_PAST = 3.months
   WINDOW_FUTURE = 12.months
@@ -41,10 +36,6 @@ class IcalFeedGeneratorService
   def add_event(calendar, occurrence)
     calendar.event do |e|
       e.uid = "#{occurrence.event.id}-#{occurrence.occurrence_start_at.to_i}@famjam"
-      # icalendar only emits the "Z" (UTC) suffix when explicitly told
-      # tzid => 'UTC' - it does not infer it from the Time/TimeWithZone
-      # object's own zone, so this must be passed explicitly or the output
-      # is an invalid "floating" time with no zone information at all.
       e.dtstart = Icalendar::Values::DateTime.new(occurrence.starts_at, "tzid" => "UTC")
       e.dtend = Icalendar::Values::DateTime.new(occurrence.ends_at, "tzid" => "UTC")
       e.summary = occurrence.title

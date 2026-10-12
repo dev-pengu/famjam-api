@@ -7,7 +7,7 @@ class ChoreCompletionSerializer < ApplicationSerializer
       chore_id: chore_completion.chore_id,
       due_on: chore_completion.due_on,
       completed_by_membership_id: chore_completion.completed_by_membership_id,
-      completed_by: PersonSerializer.new(chore_completion.completed_by_membership.person).as_json,
+      completed_by: MembershipSerializer.new(chore_completion.completed_by_membership).as_json,
       completed_at: chore_completion.completed_at,
       coin_value: chore_completion.coin_value,
       status: chore_completion.status,

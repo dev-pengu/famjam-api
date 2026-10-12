@@ -13,15 +13,16 @@ module Api
         contract = InvitationCreateParams.build(params)
         return render_invalid(contract) unless contract.valid?
 
-        result = InvitationCreationService.call(actor: current_user, family: @family, **contract.to_service_args)
+        result = @family.create_invitation(actor: current_user, **contract.to_service_args)
         render_result(result, status: :created, serializer: InvitationSerializer)
       end
 
       def destroy
         invitation = @family.invitations.find(params[:id])
         authorize invitation, :revoke?
-        result = InvitationRevocationService.call(actor: current_user, invitation: invitation)
-        render_result(result)
+        render json: { errors: result.errors }, status: :unprocessable_entity unless invitation.redeemable?
+        invitation.revoke!
+        render json: InvitationSerializer.new(invitation), status: :ok
       end
 
       private

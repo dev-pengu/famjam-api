@@ -27,14 +27,14 @@ module Api
       def grant_admin
         membership = @family.memberships.find(params[:id])
         authorize membership, :grant_admin?
-        result = AdminGrantService.call(actor: current_user, membership: membership)
+        result = membership.grant_admin(actor: current_user)
         render_result(result, serializer: MembershipSerializer)
       end
 
       def revoke_admin
         membership = @family.memberships.find(params[:id])
         authorize membership, :revoke_admin?
-        result = AdminRevocationService.call(actor: current_user, membership: membership)
+        result = membership.revoke_admin(actor: current_user)
         render_result(result, serializer: MembershipSerializer)
       end
 
@@ -52,7 +52,7 @@ module Api
       def age_up
         membership = @family.memberships.find(params[:id])
         authorize membership, :age_up?
-        result = AgeUpService.call(actor: current_user, membership: membership)
+        result = membership.age_up(actor: current_user)
         render_result(result, serializer: MembershipSerializer)
       end
 
@@ -68,8 +68,9 @@ module Api
         contract = MembershipSetColorParams.build(params)
         return render_invalid(contract) unless contract.valid?
 
-        result = SetMembershipColorService.call(actor: current_user, membership: membership, color: contract.color)
-        render_result(result, serializer: MembershipSerializer)
+        return render_invalid(membership) unless membership.set_color(contract.color)
+
+        render json: MembershipSerializer.new(membership)
       end
 
       def reactivate

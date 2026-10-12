@@ -14,8 +14,8 @@ module Api
         contract = NotificationPreferencesUpdateParams.build(params)
         return render_invalid(contract) unless contract.valid?
 
-        result = UpdateNotificationPreferencesService.call(user: current_user, **contract.to_service_args)
-        render_result(result, serializer: NotificationPreferenceSerializer)
+        preferences = current_user.update_notification_preferences!(**contract.to_service_args)
+        render json: NotificationPreferenceSerializer.new(preferences)
       end
     end
   end

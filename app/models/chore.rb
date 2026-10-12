@@ -1,11 +1,22 @@
 class Chore < ApplicationRecord
   belongs_to :family
-  belongs_to :assignee, class_name: "Membership"
+  belongs_to :assignee, class_name: "Membership", optional: true
   belongs_to :created_by_user, class_name: "User"
   has_many :chore_completions, dependent: :destroy
 
   enum :status, { active: 0, archived: 1 }, default: :active
   enum :recurrence_frequency, { daily: 0, weekly: 1, monthly: 2, yearly: 3 }
+  enum :category, { household: 0, outdoor: 1, pet_care: 2, personal_care: 3, homework: 4, other: 5 }
+
+  # Fixed per-category color, from the same palette Membership#color uses
+  CATEGORY_COLORS = {
+    "household" => "blue",
+    "outdoor" => "green",
+    "pet_care" => "amber",
+    "personal_care" => "violet",
+    "homework" => "indigo",
+    "other" => "cyan"
+  }.freeze
 
   validates :title, presence: true
   validates :coin_value, presence: true, numericality: { greater_than_or_equal_to: 0, only_integer: true }
@@ -18,6 +29,14 @@ class Chore < ApplicationRecord
 
   def recurring?
     recurrence_frequency.present?
+  end
+
+  def unassigned?
+    assignee_id.nil?
+  end
+
+  def category_color
+    category && CATEGORY_COLORS[category]
   end
 
   def archive

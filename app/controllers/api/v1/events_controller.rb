@@ -41,8 +41,8 @@ module Api
 
       def destroy
         authorize @event
-        result = DestroyEventService.call(event: @event)
-        render_result(result)
+        @event.destroy!
+        render json: true
       end
 
       # Pre-flight, non-blocking overlap check for the create/edit form -
@@ -71,11 +71,13 @@ module Api
         contract = EventOccurrenceParams.build(params)
         return render_invalid(contract) unless contract.valid?
 
-        result = UpsertEventOccurrenceExceptionService.call(
-          actor: current_user, event: @event, occurrence_start_at: contract.occurrence_start_at,
-          status: request.delete? ? :cancelled : :modified, attributes: contract.override_attributes,
+        exception = EventOccurrenceException.upsert_for_occurrence(
+          event: @event, occurrence_start_at: contract.occurrence_start_at,
+          status: request.delete? ? :cancelled : :modified, actor: current_user, attributes: contract.override_attributes,
         )
-        render_result(result, serializer: EventOccurrenceExceptionSerializer)
+        return render_invalid(exception) unless exception.errors.empty?
+
+        render json: EventOccurrenceExceptionSerializer.new(exception)
       end
 
       private
